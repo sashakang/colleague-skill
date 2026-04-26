@@ -1,32 +1,32 @@
 ---
-name: Bug report / Bug 报告
-about: Report something that is broken. / 报告出错的功能。
+name: Bug report
+about: Report something that is broken.
 title: "[Bug] "
 labels: ["bug", "needs-triage"]
 assignees: []
 ---
 
-## Describe the bug / 描述 bug
+## Describe the bug
 
-<!-- Clear, concise description. / 简明描述。 -->
+<!-- Clear, concise description. -->
 
-## Steps to reproduce / 复现步骤
+## Steps to reproduce
 
 1.
 2.
 3.
 
-## Expected behavior / 期望行为
+## Expected behavior
 
-## Actual behavior / 实际行为
+## Actual behavior
 
-<!-- Paste error output, stack trace, or screenshots. / 贴出错误输出、堆栈或截图。 -->
+<!-- Paste error output, stack trace, or screenshots. -->
 
 ```
-<!-- logs here / 在这里贴日志 -->
+<!-- logs here -->
 ```
 
-## Environment / 环境
+## Environment
 
 - OS: <!-- e.g. macOS 14.5, Ubuntu 22.04 -->
 - Python: <!-- output of `python3 --version` -->
@@ -34,6 +34,6 @@ assignees: []
 - colleague-skill commit: <!-- output of `git rev-parse --short HEAD` -->
 - Data source: <!-- Feishu / DingTalk / Slack / Confluence / WeChat / manual -->
 
-## Additional context / 补充信息
+## Additional context
 
 <!-- Anything else we should know? Related issues, recent changes, etc. -->

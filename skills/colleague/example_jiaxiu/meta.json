@@ -1,5 +1,5 @@
 {
-  "name": "佳秀（示例）",
+  "name": "Jiaxiu Example",
   "slug": "example_jiaxiu",
   "created_at": "2026-04-04T00:00:00Z",
   "updated_at": "2026-04-04T00:00:00Z",
@@ -9,14 +9,14 @@
     "level": "None",
     "role": "HRBP",
     "department": "AI Lab",
-    "gender": "女",
+    "gender": "female",
     "mbti": "ENFJ"
   },
   "tags": {
-    "personality": ["认真负责", "热情", "爱聊天", "星座达人", "综艺迷"],
-    "culture": ["氛围组", "靠谱BP"]
+    "personality": ["responsible", "warm", "chatty", "astrology expert", "variety-show fan"],
+    "culture": ["team energy", "reliable HRBP"]
   },
-  "impression": "招聘靠谱效率高，闲下来能跟你从星座聊到塔罗再聊到新说唱，团队里的快乐源泉",
+  "impression": "Reliable and efficient in recruiting; in downtime she can talk from astrology to tarot to The Rap of China, and she is a source of joy for the team.",
   "knowledge_sources": [],
   "corrections_count": 0
 }

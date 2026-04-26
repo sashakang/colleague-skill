@@ -1,118 +1,76 @@
-# Contributing to colleague.skill / 贡献指南
+# Contributing to dot-skill
 
-> English first, 中文在下方。
+Thanks for contributing. dot-skill distills a person, relationship, or public figure into an AI Skill. The project improves when contributors add collectors, improve prompts, test host compatibility, and document real workflows.
 
-Thank you for considering a contribution! This project turns colleagues (and anyone else) into AI skills, and it's only as good as its community.
+## Ways to Contribute
 
-感谢你愿意贡献。这个项目的目标是把同事（以及任何人）蒸馏成 AI skill，社区越活跃它就越好。
+- Fix bugs in the Python tools, installers, prompt pipeline, or tests.
+- Improve docs, examples, or host setup instructions.
+- Add or harden data collectors for Feishu, DingTalk, Slack, email, WeChat exports, and future sources.
+- Submit generated Skills or gallery metadata.
+- Test on Windows, macOS, Linux, Claude Code, Hermes, OpenClaw, and Codex.
 
----
-
-## Ways to contribute / 贡献方式
-
-- **Report bugs** — open a [bug report](.github/ISSUE_TEMPLATE/bug_report.md)
-- **Suggest features** — open a [feature request](.github/ISSUE_TEMPLATE/feature_request.md)
-- **Translate docs** — see `docs/lang/` for existing languages
-- **Add a data source collector** — e.g. `tools/slack_auto_collector.py` is a reference implementation
-- **Submit a community skill** — submit to the [gallery](https://titanwings.github.io/colleague-skill-site/)
-- **Improve prompts** — files under `prompts/` shape skill behavior; small wording tweaks are welcome
-
----
-
-## Development setup / 开发环境
+## Development Setup
 
 ```bash
-git clone https://github.com/titanwings/colleague-skill.git
+git clone https://github.com/titanwings/colleague-skill
 cd colleague-skill
-pip3 install -r requirements.txt
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-Python 3.9+ is required. Optional extras (`openpyxl`, auto-collector credentials) are covered in [INSTALL.md](INSTALL.md).
+Optional collectors may require extra dependencies such as `playwright`, `python-docx`, `openpyxl`, Node.js, or a platform-specific token.
 
----
+## Branch and PR Workflow
 
-## Branch & PR workflow / 分支和 PR 流程
+1. Create a focused branch for one change.
+2. Keep generated data, credentials, logs, and private exports out of commits.
+3. Add or update tests when behavior changes.
+4. Run the most relevant test subset before opening a PR.
+5. In the PR description, include what changed, how it was tested, and any migration notes.
 
-1. Fork the repo and create a branch from `main`:
-   - `feat/<short-name>` for new features
-   - `fix/<short-name>` for bug fixes
-   - `docs/<short-name>` for docs only
-   - `chore/<short-name>` for tooling / infra
-2. Make your changes. Keep PRs focused — one concern per PR.
-3. Run tests and compile checks locally:
-   ```bash
-   python -m compileall tools/
-   python -m unittest discover -s tests -p 'test_*.py' -v
-   ```
-4. Open a PR against `main`. Fill out the PR template.
-5. CI must pass. A maintainer will review — please be patient, and feel free to ping on Discord if it's been a week.
+## Commit Style
 
----
+Use short imperative commits:
 
-## Commit message style / 提交信息规范
-
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-feat: add Notion auto-collector
-fix: handle 429 rate limit in feishu_parser
-docs: translate INSTALL to Korean
-chore: bump requests to 2.32
-test: cover skill_writer rollback edge cases
+```text
+fix: preserve codex generated-skill installer paths
+docs: clarify Slack auto-collection setup
+test: cover relationship skill manifest fields
 ```
 
-Keep the subject under 72 characters. Use the body for the *why*, not the *what*.
+## Code Style
 
----
+- Prefer small, explicit Python functions.
+- Preserve existing CLI flags, JSON/YAML keys, file paths, and output schemas unless a migration is intentional.
+- Do not commit secrets or private source material.
+- Keep prompts deterministic enough that generated artifacts remain reviewable.
+- Keep docs and examples in English.
 
-## Code style / 代码风格
+## Tests
 
-- Match surrounding code — we don't enforce a formatter yet, but consistency matters
-- Python: prefer standard library where possible; add to `requirements.txt` only if necessary
-- Tools under `tools/` should be runnable as standalone CLIs (`if __name__ == "__main__":`)
-- Prompts under `prompts/` are plain Markdown — keep them concise and task-specific
+Useful targeted commands:
 
----
+```bash
+python -m unittest tests.test_skill_entrypoint_docs
+python -m unittest tests.test_skill_writer
+python -m unittest tests.test_research_tools
+python -m unittest discover -s tests -p 'test_*.py'
+```
 
-## Tests / 测试
+## Security
 
-New functionality should come with tests under `tests/test_*.py`. Use `unittest` (stdlib) — no extra test framework.
+Never include real tokens, cookies, private chat exports, private emails, or internal documents in issues, PRs, examples, or tests. Redact names and sensitive content in fixtures.
 
-When adding a new data source collector, at minimum cover:
-- Auth modes (token / user+password / etc.)
-- Rate-limit / retry behavior (mock HTTP)
-- Output format consistency with existing collectors
+## Documentation
 
-Don't hit live APIs in CI. Mock with `unittest.mock` or the `responses` library.
+When changing install behavior, update `README.md`, `INSTALL.md`, and `SKILL.md` together. When changing generated artifact structure, update tests and sample Skills under `skills/colleague/`.
 
----
+## Community
 
-## Security / 安全
+Use GitHub Issues for bugs and GitHub Discussions or Discord for product ideas and design discussion.
 
-- **Never commit secrets, tokens, or personal data.** If you accidentally do, rotate the credential immediately and let a maintainer know.
-- Config files that hold credentials should be written to the user's home (e.g. `~/.colleague-skill/`) with permission `0600`.
-- If you find a security issue, **do not open a public issue.** Email the maintainer or DM on Discord.
+## License
 
----
-
-## Docs / 文档
-
-- User-facing behavior changes → update `README.md`, `SKILL.md`, and `INSTALL.md`
-- If you add a language translation of the README, also update the language nav strip in every other `docs/lang/README_*.md`
-- Prefer English for code comments; docs can be bilingual
-
----
-
-## Community / 社区
-
-- [💬 Discord](https://discord.gg/aRjmJBdK) — main chat
-- [GitHub Discussions](https://github.com/titanwings/colleague-skill/discussions) — long-form Q&A and design threads
-- [Skill gallery](https://titanwings.github.io/colleague-skill-site/) — browse and submit skills
-
-Be kind. Assume good intent. Disagree on the idea, not the person.
-
----
-
-## License / 许可
-
-By contributing, you agree that your contributions will be licensed under the [MIT License](LICENSE).
+By contributing, you agree that your contribution is licensed under the repository's MIT License.

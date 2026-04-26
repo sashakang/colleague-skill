@@ -17,7 +17,7 @@ friends, exes, siblings, mentors, or anyone emotionally important to the user.
 ## Opening
 
 ```text
-I’ll help you create a relationship-based Skill. We’ll do this in 3 short turns.
+I'll help you create a relationship-based Skill. We'll do this in 3 short turns.
 Everything is skippable.
 ```
 
@@ -82,7 +82,7 @@ What materials can you provide for this person?
 - diary entries or memory notes
 - no files, only memory
 
-If you upload files, save them under this skill’s `knowledge/` folders before analyzing them.
+If you upload files, save them under this skill's `knowledge/` folders before analyzing them.
 For WeChat chat history import, you can try WeFlow first.
 ```
 

@@ -71,43 +71,6 @@ When any task or question arrives:
 """
 
 
-SKILL_MD_TEMPLATE_ZH = """\
----
-name: {combined_name}
-description: {description}
-user-invocable: true
----
-
-# {display_name}
-
-{identity}
-
----
-
-## PART A：工作能力
-
-{work_content}
-
----
-
-## PART B：人物性格
-
-{persona_content}
-
----
-
-## 运行规则
-
-接收到任何任务或问题时：
-
-1. **先由 PART B 判断**：你会不会接这个任务？用什么态度接？
-2. **再由 PART A 执行**：用你的技术能力和工作方法完成任务
-3. **输出时保持 PART B 的表达风格**：你说话的方式、用词习惯、句式
-
-**PART B 的 Layer 0 规则永远优先，任何情况下不得违背。**
-"""
-
-
 def slugify(name: str) -> str:
     """
     Convert a human-readable name into a stable slug.
@@ -141,8 +104,12 @@ def language_code(meta: dict) -> str:
 
 
 def prefers_chinese(meta: dict) -> bool:
-    """Return whether artifact chrome should be rendered in Chinese."""
-    return language_code(meta).startswith("zh")
+    """Return whether artifact chrome should be rendered in Chinese.
+
+    The repository keeps generated chrome in English. Locale codes such as
+    `zh-CN` may still be stored as metadata for compatibility.
+    """
+    return False
 
 
 def render_combined_skill(meta: dict, work_content: str, persona_content: str) -> str:
@@ -152,7 +119,7 @@ def render_combined_skill(meta: dict, work_content: str, persona_content: str) -
     description = meta.get("summary") or (
         f"{meta['display_name']}, {identity}" if identity else meta["display_name"]
     )
-    template = SKILL_MD_TEMPLATE_ZH if prefers_chinese(meta) else SKILL_MD_TEMPLATE_EN
+    template = SKILL_MD_TEMPLATE_EN
 
     return template.format(
         combined_name=artifacts["combined_name"],
@@ -167,11 +134,7 @@ def render_combined_skill(meta: dict, work_content: str, persona_content: str) -
 def render_work_skill(meta: dict, work_content: str) -> str:
     """Render the work-only skill artifact."""
     artifacts = meta["artifacts"]
-    description = (
-        f"{meta['display_name']} 的工作能力（仅 Work，无 Persona）"
-        if prefers_chinese(meta)
-        else f"{meta['display_name']} work capability only (without persona)"
-    )
+    description = f"{meta['display_name']} work capability only (without persona)"
     return (
         f"---\nname: {artifacts['work_name']}\n"
         f"description: {description}\n"
@@ -182,11 +145,7 @@ def render_work_skill(meta: dict, work_content: str) -> str:
 def render_persona_skill(meta: dict, persona_content: str) -> str:
     """Render the persona-only skill artifact."""
     artifacts = meta["artifacts"]
-    description = (
-        f"{meta['display_name']} 的人物性格（仅 Persona，无工作能力）"
-        if prefers_chinese(meta)
-        else f"{meta['display_name']} persona only (without work capability)"
-    )
+    description = f"{meta['display_name']} persona only (without work capability)"
     return (
         f"---\nname: {artifacts['persona_name']}\n"
         f"description: {description}\n"
@@ -304,7 +263,7 @@ def apply_correction(persona_content: str, correction: dict) -> str:
     scene = correction.get("scene", "general")
     correction_line = f"\n- [{scene}] should not {correction['wrong']}; should {correction['correct']}"
     target = "## Correction Log"
-    legacy_target = "## Correction 记录"
+    legacy_target = "## Correction Log"
     if target in persona_content:
         insert_pos = persona_content.index(target) + len(target)
         rest = persona_content[insert_pos:]
@@ -315,7 +274,7 @@ def apply_correction(persona_content: str, correction: dict) -> str:
     if legacy_target in persona_content:
         insert_pos = persona_content.index(legacy_target) + len(legacy_target)
         rest = persona_content[insert_pos:]
-        legacy_placeholder = "\n\n（暂无记录）"
+        legacy_placeholder = "\n\nNo corrections yet."
         if rest.startswith(legacy_placeholder):
             rest = rest[len(legacy_placeholder):]
         return persona_content[:insert_pos] + correction_line + rest

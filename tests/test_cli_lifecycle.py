@@ -318,7 +318,7 @@ class CliLifecycleTest(unittest.TestCase):
                 meta_path,
                 {
                     "character": "celebrity",
-                    "display_name": "周奇墨",
+                    "display_name": "Zhou Qimo",
                     "classification": {"language": "zh-CN"},
                 },
             )
@@ -340,7 +340,7 @@ class CliLifecycleTest(unittest.TestCase):
                 "--slug",
                 "zhou_qimo",
                 "--name",
-                "周奇墨",
+                "Zhou Qimo",
                 "--meta",
                 str(meta_path),
                 "--work",

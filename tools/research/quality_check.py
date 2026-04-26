@@ -173,16 +173,16 @@ def evaluate_skill_text(
     }
     strict = profile == "budget-unfriendly"
     checks = {
-        "mental_models": bullet_count >= 3 and bool(re.search(r"mental model|心智模型", text, re.IGNORECASE)),
-        "limitations": bool(re.search(r"limitations|boundary|局限|边界", text, re.IGNORECASE)),
-        "expression_dna": bool(re.search(r"expression DNA|表达 DNA|sentence rhythm|metaphor", text, re.IGNORECASE)),
-        "honest_boundaries": bool(re.search(r"honest boundar|诚实边界|what .* does not know", text, re.IGNORECASE)),
-        "internal_tension": bool(re.search(r"contradiction|tension|矛盾|张力", text, re.IGNORECASE)),
+        "mental_models": bullet_count >= 3 and bool(re.search(r"mental model", text, re.IGNORECASE)),
+        "limitations": bool(re.search(r"limitations|boundary", text, re.IGNORECASE)),
+        "expression_dna": bool(re.search(r"expression DNA|sentence rhythm|metaphor", text, re.IGNORECASE)),
+        "honest_boundaries": bool(re.search(r"honest boundar|what .* does not know", text, re.IGNORECASE)),
+        "internal_tension": bool(re.search(r"contradiction|tension", text, re.IGNORECASE)),
         "intellectual_genealogy": (
-            bool(re.search(r"intellectual genealogy|influenced by|智识谱系|influenced:", text, re.IGNORECASE))
+            bool(re.search(r"intellectual genealogy|influenced by|influenced:", text, re.IGNORECASE))
         ) if strict else True,
         "agentic_protocol": (
-            bool(re.search(r"agentic protocol|research dimensions|step 1.*classify|分析协议", text, re.IGNORECASE))
+            bool(re.search(r"agentic protocol|research dimensions|step 1.*classify", text, re.IGNORECASE))
         ) if strict else True,
         "source_grounding": len(grounded_urls) >= (4 if strict else 2),
         "copyright_safety": is_copyright_safe_text(text) and metrics["long_quote_lines"] == 0,

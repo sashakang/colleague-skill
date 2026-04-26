@@ -1,6 +1,6 @@
 ---
-name: Question / 提问
-about: Ask how to use colleague.skill. / 咨询如何使用 colleague.skill。
+name: Question
+about: Ask how to use colleague.skill.
 title: "[Question] "
 labels: ["question"]
 assignees: []
@@ -8,18 +8,17 @@ assignees: []
 
 <!--
 Before opening a question, please check:
-提问之前请先看：
 
 - README.md / INSTALL.md / SKILL.md
-- Existing issues and discussions / 已有的 issue 和讨论
+- Existing issues and discussions
 - Discord: https://discord.gg/aRjmJBdK
 -->
 
-## What are you trying to do? / 你想做什么？
+## What are you trying to do?
 
-## What have you tried? / 你试过什么？
+## What have you tried?
 
-## Environment / 环境
+## Environment
 
 - OS:
 - Python:

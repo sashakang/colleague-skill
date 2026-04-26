@@ -82,7 +82,7 @@ class OpenClawAndCodexInstallTest(unittest.TestCase):
                 "zhou_qimo",
                 {
                     "character": "celebrity",
-                    "name": "周奇墨",
+                    "name": "Zhou Qimo",
                     "classification": {"language": "zh-CN"},
                 },
                 "Work body",

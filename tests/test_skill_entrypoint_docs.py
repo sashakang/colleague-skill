@@ -10,9 +10,9 @@ class SkillEntrypointDocsTest(unittest.TestCase):
         content = (ROOT / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("name: dot-skill", content)
         self.assertIn("`/dot-skill`", content)
-        self.assertIn("兼容宿主", content)
+        self.assertFalse(any(19968 <= ord(ch) <= 40959 for ch in content))
         self.assertIn("compatible hosts", content.lower())
-        self.assertIn("管理操作", content)
+        self.assertIn("Management Operations", content)
         self.assertIn("tools/skill_writer.py", content)
         self.assertIn("prompts/celebrity/research.md", content)
         self.assertIn("budget-unfriendly", content)
@@ -22,7 +22,6 @@ class SkillEntrypointDocsTest(unittest.TestCase):
         self.assertIn("Files scanned >= 3", content)
         self.assertIn("Unique URLs >= 2", content)
         self.assertIn("Potential long quote lines = 0", content)
-        self.assertIn("实际打开过的具体页面", content)
         self.assertIn("actual inspected pages", content)
         self.assertIn("01_writings.md", content)
         self.assertIn("06_timeline.md", content)
@@ -65,7 +64,7 @@ class SkillEntrypointDocsTest(unittest.TestCase):
         self.assertIn("/{character}-{slug}", install)
         self.assertIn("./skills/colleague", skill)
         self.assertIn("compatible hosts", readme.lower())
-        self.assertIn("兼容宿主", install)
+        self.assertIn("Compatible hosts", install)
 
     def test_repo_examples_live_under_skills_colleague(self) -> None:
         self.assertTrue((ROOT / "skills" / "colleague" / "example_zhangsan").exists())

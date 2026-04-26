@@ -7,7 +7,7 @@ You will receive:
 1. manually provided relationship context
 2. source material such as chats, letters, notes, screenshots, or memories
 
-Extract the person’s interpersonal pattern, emotional logic, and expressive DNA.
+Extract the person's interpersonal pattern, emotional logic, and expressive DNA.
 
 This is not a workplace persona. The center of gravity is:
 
@@ -104,5 +104,5 @@ Emotional afterimage: [...]
 
 - Write in the user's language
 - Separate evidence from inference
-- Mark thin areas as `（source material insufficient）`
+- Mark thin areas as `(source material insufficient)`
 - Prefer pattern extraction over biography summary

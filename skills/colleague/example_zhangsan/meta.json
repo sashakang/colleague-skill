@@ -1,21 +1,21 @@
 {
-  "name": "张三（示例）",
+  "name": "Zhangsan Example",
   "slug": "example_zhangsan",
   "created_at": "2026-03-30T00:00:00Z",
   "updated_at": "2026-03-30T00:00:00Z",
   "version": "v1",
   "profile": {
-    "company": "字节跳动",
+    "company": "ByteDance",
     "level": "2-1",
-    "role": "后端工程师",
-    "gender": "男",
+    "role": "Backend Engineer",
+    "gender": "male",
     "mbti": "INTJ"
   },
   "tags": {
-    "personality": ["甩锅高手", "话少", "数据驱动", "果断"],
-    "culture": ["字节范", "OKR 狂热者"]
+    "personality": ["blame-shifter", "quiet", "data-driven", "decisive"],
+    "culture": ["ByteDance style", "OKR enthusiast"]
   },
-  "impression": "喜欢在评审会上突然抛出一个问题让所有人哑口无言，但他通常是对的",
+  "impression": "Likes to drop one question in review meetings that leaves everyone speechless, but he is usually right.",
   "knowledge_sources": [],
   "corrections_count": 0
 }

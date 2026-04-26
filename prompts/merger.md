@@ -1,91 +1,58 @@
-# 增量 Merge Prompt
+# Incremental Merge Prompt
 
-## 任务
+## Task
 
-你将收到：
-1. 现有的 `work.md` 内容
-2. 现有的 `persona.md` 内容
-3. 新的原材料内容（文件或消息）
+Merge new source material into an existing generated Skill.
 
-你的任务是判断新内容应该更新哪个部分，并输出增量更新内容。
+Inputs:
 
-**原则：只追加增量，不覆盖已有结论。如有冲突，输出冲突提示让用户决定。**
+- existing `work.md`
+- existing `persona.md`
+- new source material or analysis
+- optional user correction
 
----
+## Principles
 
-## Step 1：分类判断
+- Preserve existing conclusions unless new evidence clearly updates them.
+- Add new information to the most specific relevant section.
+- Do not duplicate sections.
+- Keep Work Skill and Persona concerns separate.
+- Keep all commands, paths, API endpoints, JSON/YAML keys, placeholders, and code examples unchanged.
+- Write in English.
 
-将新内容中的每条信息归类：
+## Merge Rules
 
-| 信息类型 | 归入 |
-|---------|------|
-| 技术规范、代码风格、接口设计、工作流程 | → work.md |
-| 业务知识、系统职责、技术结论 | → work.md |
-| 沟通风格、口头禅、表达习惯 | → persona.md |
-| 决策行为、人际关系、情绪模式 | → persona.md |
-| 两者都有 | → 分别归入 |
+### Work Skill
 
----
+Add or update:
 
-## Step 2：检查冲突
+- scope
+- technical or professional standards
+- workflow
+- output preferences
+- knowledge base
+- evidence gaps
 
-对比新内容与现有内容：
+### Persona
 
-- 如果新内容**补充**了现有信息（增加了新细节）→ 直接追加
-- 如果新内容**确认**了现有信息 → 忽略（不重复写）
-- 如果新内容**与现有信息矛盾** → 输出冲突提示：
+Add or update:
 
-```
-⚠️ 发现冲突：
-- 现有：{现有描述}
-- 新发现：{新内容描述}
-- 来源：{文件名/时间}
+- core rules
+- identity
+- expression style
+- decisions and judgment
+- interpersonal behavior
+- boundaries and triggers
+- correction log
 
-建议：[保留现有 / 更新为新内容 / 两者都保留并标注时间]
-请用户决定。
-```
+### Conflict Handling
 
----
+If new evidence conflicts with old content:
 
-## Step 3：生成更新 Patch
+1. Keep the old content if the new evidence is weak or ambiguous.
+2. Replace the old content if the new evidence is direct and stronger.
+3. If both are plausible, record the condition that explains when each applies.
 
-对 `work.md` 的更新，输出格式：
-```
-=== work.md 更新 ===
+## Output
 
-[追加到"技术规范/命名规范"节]
-- {新内容}
-
-[追加到"经验知识库"节]
-- {新知识结论}
-
-[无更新] 或 [以上章节有更新]
-```
-
-对 `persona.md` 的更新，输出格式：
-```
-=== persona.md 更新 ===
-
-[追加到"Layer 2/用词习惯"节]
-- 新口头禅："{xxx}"
-
-[追加到"Layer 4/对平级"节]
-- {新行为描述}
-
-[无更新] 或 [以上章节有更新]
-```
-
----
-
-## Step 4：生成更新摘要
-
-向用户展示：
-```
-本次更新摘要：
-- work.md：追加了 {N} 条新信息（{简要描述}）
-- persona.md：追加了 {N} 条新信息（{简要描述}）
-- 发现 {N} 处冲突，需要你确认（见上方）
-
-版本将从 {vN} 升级到 {vN+1}。
-确认应用更新？
-```
+Return the updated file content only for the file being patched. Do not include commentary outside the markdown.

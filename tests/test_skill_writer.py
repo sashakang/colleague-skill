@@ -119,7 +119,7 @@ class SkillWriterTest(unittest.TestCase):
             self.assertEqual(saved_meta["artifacts"]["combined_command"], "relationship-mireille")
             self.assertIn("name: relationship_mireille", combined_skill)
 
-    def test_create_skill_renders_chinese_chrome_when_language_is_zh_cn(self) -> None:
+    def test_create_skill_renders_english_chrome_when_language_is_zh_cn(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             base_dir = Path(tmp_dir) / "skills" / "relationship"
             meta = {
@@ -142,10 +142,10 @@ class SkillWriterTest(unittest.TestCase):
             work_skill = (skill_dir / "work_skill.md").read_text(encoding="utf-8")
             persona_skill = (skill_dir / "persona_skill.md").read_text(encoding="utf-8")
 
-            self.assertIn("## PART A：工作能力", combined_skill)
-            self.assertIn("运行规则", combined_skill)
-            self.assertIn("仅 Work，无 Persona", work_skill)
-            self.assertIn("仅 Persona，无工作能力", persona_skill)
+            self.assertIn("## PART A: Work", combined_skill)
+            self.assertIn("## Operating Rules", combined_skill)
+            self.assertIn("work capability only", work_skill)
+            self.assertIn("persona only", persona_skill)
 
     def test_create_celebrity_adds_research_dirs_and_toolchain(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -234,10 +234,10 @@ class SkillWriterTest(unittest.TestCase):
             base_dir = Path(tmp_dir) / "skills" / "celebrity"
             meta = {
                 "character": "celebrity",
-                "name": "徐志胜",
-                "display_name": "徐志胜",
+                "name": "Xu Zhisheng",
+                "display_name": "Xu Zhisheng",
                 "classification": {"language": "zh-CN"},
-                "profile": "中国脱口秀演员，以自嘲式观察喜剧著称。",
+                "profile": "Chinese stand-up comedian known for self-deprecating observational comedy.",
             }
 
             skill_dir = skill_writer.create_skill(
@@ -249,8 +249,11 @@ class SkillWriterTest(unittest.TestCase):
             )
 
             saved_meta = json.loads((skill_dir / "meta.json").read_text(encoding="utf-8"))
-            self.assertEqual(saved_meta["profile"], "中国脱口秀演员，以自嘲式观察喜剧著称。")
-            self.assertIn("中国脱口秀演员", saved_meta["summary"])
+            self.assertEqual(
+                saved_meta["profile"],
+                "Chinese stand-up comedian known for self-deprecating observational comedy.",
+            )
+            self.assertIn("Chinese stand-up comedian", saved_meta["summary"])
 
     def test_update_regenerates_manifest_and_archives_artifacts(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -290,7 +293,7 @@ class SkillWriterTest(unittest.TestCase):
                 "zhou-qimo",
                 {
                     "character": "celebrity",
-                    "name": "周奇墨",
+                    "name": "Zhou Qimo",
                     "classification": {"language": "zh-CN"},
                 },
                 "Initial work",
@@ -302,14 +305,14 @@ class SkillWriterTest(unittest.TestCase):
                 correction={
                     "persona_corrections": [
                         {
-                            "scene": "铺陈处境时",
-                            "wrong": "一上来就下判断",
-                            "correct": "先把处境讲得很普通，再轻轻点一下",
+                            "scene": "setting up a situation",
+                            "wrong": "judges immediately",
+                            "correct": "first makes the situation feel ordinary, then lightly points at the absurdity",
                         },
                         {
-                            "scene": "表达立场时",
-                            "wrong": "写成明显自嘲型",
-                            "correct": "和观众一起承认大家都在局里",
+                            "scene": "stating a position",
+                            "wrong": "turns it into obvious self-mockery",
+                            "correct": "admits together with the audience that everyone is inside the situation",
                         },
                     ]
                 },
@@ -320,8 +323,8 @@ class SkillWriterTest(unittest.TestCase):
 
             self.assertEqual(new_version, "v2")
             self.assertEqual(saved_meta["corrections_count"], 2)
-            self.assertIn("一上来就下判断", persona_doc)
-            self.assertIn("写成明显自嘲型", persona_doc)
+            self.assertIn("judges immediately", persona_doc)
+            self.assertIn("obvious self-mockery", persona_doc)
             self.assertEqual(persona_doc.count("## Correction Log"), 1)
 
     def test_update_replaces_existing_markdown_sections_instead_of_appending_duplicates(self) -> None:
@@ -332,20 +335,20 @@ class SkillWriterTest(unittest.TestCase):
                 "zhou-qimo",
                 {
                     "character": "celebrity",
-                    "name": "周奇墨",
+                    "name": "Zhou Qimo",
                     "classification": {"language": "zh-CN"},
                 },
                 "\n".join(
                     [
                         "# Work",
                         "",
-                        "## 表达规范",
+                        "## Expression Standards",
                         "",
-                        "- 原始表述",
+                        "- Original phrasing",
                         "",
-                        "## 输出风格",
+                        "## Output Style",
                         "",
-                        "- 原始结构",
+                        "- Original structure",
                     ]
                 ),
                 "\n".join(
@@ -354,11 +357,11 @@ class SkillWriterTest(unittest.TestCase):
                         "",
                         "## Layer 2: Expression DNA",
                         "",
-                        "旧内容",
+                        "Old content",
                         "",
                         "## Layer 3: Mental Models",
                         "",
-                        "保持不变",
+                        "Keep unchanged",
                     ]
                 ),
             )
@@ -367,20 +370,20 @@ class SkillWriterTest(unittest.TestCase):
                 skill_dir,
                 work_patch="\n".join(
                     [
-                        "## 表达规范",
+                        "## Expression Standards",
                         "",
-                        "- 新的节奏控制",
+                        "- New rhythm control",
                         "",
-                        "## 输出风格",
+                        "## Output Style",
                         "",
-                        "- 新的结构模板",
+                        "- New structure template",
                     ]
                 ),
                 persona_patch="\n".join(
                     [
                         "## Layer 2: Expression DNA",
                         "",
-                        "新内容",
+                        "New content",
                     ]
                 ),
             )
@@ -388,13 +391,13 @@ class SkillWriterTest(unittest.TestCase):
             work_doc = (skill_dir / "work.md").read_text(encoding="utf-8")
             persona_doc = (skill_dir / "persona.md").read_text(encoding="utf-8")
 
-            self.assertEqual(work_doc.count("## 表达规范"), 1)
-            self.assertEqual(work_doc.count("## 输出风格"), 1)
-            self.assertIn("新的节奏控制", work_doc)
-            self.assertNotIn("原始表述", work_doc)
+            self.assertEqual(work_doc.count("## Expression Standards"), 1)
+            self.assertEqual(work_doc.count("## Output Style"), 1)
+            self.assertIn("New rhythm control", work_doc)
+            self.assertNotIn("Original phrasing", work_doc)
             self.assertEqual(persona_doc.count("## Layer 2: Expression DNA"), 1)
-            self.assertIn("新内容", persona_doc)
-            self.assertNotIn("旧内容", persona_doc)
+            self.assertIn("New content", persona_doc)
+            self.assertNotIn("Old content", persona_doc)
 
 
 class VersionManagerTest(unittest.TestCase):

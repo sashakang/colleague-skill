@@ -1,136 +1,103 @@
-# Skill 类型抽象设计
+# Skill Type Abstraction Design
 
-最后更新：2026-04-16
+Last updated: 2026-04-16
 
-## 1. 背景
+## 1. Background
 
-当前项目的核心实现，本质上还是围绕 `colleague.skill` 展开的。
+The current implementation is structurally centered on `colleague.skill`.
 
-这个假设已经渗透进多个层面：
+This is visible in several places:
 
-- `tools/skill_writer.py` 默认生成 `name: colleague_{slug}`
-- 输出目录默认是 `skills/colleague/{slug}/`
-- 文档和命令默认入口是 `/create-colleague`
-- `meta.json` 的语义更接近“同事档案”，而不是通用 skill 元数据
+- `tools/skill_writer.py` generates `name: colleague_{slug}` and uses colleague-specific descriptions
+- output directories are organized under `skills/colleague/{slug}/`
+- commands and docs assume `/create-colleague` is the primary entry
+- metadata is optimized for a coworker profile, not a generic person/entity type
 
-这套设计对 v1 没问题，但它会直接卡住 roadmap 里从 `colleague.skill` 演进到 `dot-skill` 的目标。
+This works for v1, but it blocks the roadmap goal of evolving into `dot-skill`, where the subject can be a colleague, ex, icon, self, fictional character, or another archetype.
 
-因为 roadmap 的下一阶段已经不只是“把同事蒸馏成 skill”，而是：
+If we add `/create-ex` or `/create-icon` directly on top of the current structure, we will end up duplicating prompts, branching logic, gallery rules, and output formats around a model that is still fundamentally "colleague-first".
 
-- 同事
-- 前任 / 旧友 / 关系对象
-- 偶像 / 公众人物 / 历史人物
-- 自己
-- 虚构角色
-
-如果在现有结构上直接去加 `/create-ex`、`/create-icon`，结果很可能是：
-
-- 再复制一套 intake prompt
-- 再复制一套 writer 逻辑
-- 到处出现 `if type == xxx`
-- gallery、manifest、安装流程各自再做一遍类型分叉
-
-这种做法短期能跑，长期一定会让代码和文档越来越难维护。
-
-所以在真正开始做 Phase 2 之前，应该先做一层“类型抽象”。
+The correct next step is to abstract "skill type" into a first-class concept.
 
 ---
 
-## 2. 设计目标
+## 2. Design Goals
 
-### 目标
+### Goals
 
-- 让核心生成流程支持多种 skill 类型
-- 保持现有 `colleague` 工作流兼容，不打断已有用户
-- 避免为每一种新入口复制一套 prompt、writer 和目录结构
-- 为 gallery 分类、manifest、安装、组合编排提供统一元数据基础
-- 采用渐进式迁移，而不是一次性大改
+- make the core generation pipeline support multiple skill types
+- preserve backward compatibility for existing `colleague` flows
+- avoid prompt and file-structure duplication for each new entry command
+- provide a stable metadata contract for gallery, install, packaging, and orchestration
+- keep the migration incremental, not a full rewrite
 
-### 非目标
+### Non-goals
 
-- 这一轮不重写全部 prompts
-- 这一轮不实现 multi-skill orchestration
-- 这一轮不实现 multimodal 资产体系
-- 这一轮不强制把所有用户入口都改成 `/create-skill`
-
----
-
-## 3. 当前问题是什么
-
-目前系统把三件本来应该分开的事情，耦合在了一起：
-
-1. 被蒸馏的对象是谁
-2. 创建流程怎么走
-3. 产物文件长什么样
-
-在 v1 里，这三件事默认都等于“同事”。
-
-这会带来四个直接问题。
-
-### 3.1 对象类型被写死了
-
-当前实现默认目标对象一定是“同事”。
-
-这个假设体现在：
-
-- 默认身份文案
-- 生成的 skill 名称
-- 输出目录命名
-- 文档术语和命令名称
-
-### 3.2 新入口会诱导出多套实现
-
-如果不先抽象，后续一旦加：
-
-- `/create-ex`
-- `/create-icon`
-- `/create-self`
-
-最自然但最糟糕的演进方式就是：
-
-- 每个命令各自维护 intake
-- 每个命令各自处理 metadata
-- 每个命令各自组装最终的 SKILL.md
-
-这样很快就会变成多套平行实现。
-
-### 3.3 元数据模型太窄
-
-现在的 `meta.json` 足够支持：
-
-- 本地生成
-- 增量更新
-- 回滚
-
-但不够支持：
-
-- gallery 分类和过滤
-- install / package
-- 类型化展示
-- 未来多 skill 编排
-
-### 3.4 roadmap 后续能力没有共同底座
-
-roadmap 里后面这些目标：
-
-- 分类升级
-- 一键安装
-- 持续进化
-- 关系图谱
-
-都需要一个稳定的“skill 身份模型”。
-
-现在这个模型还不存在。
+- redesigning all prompts in one pass
+- shipping multi-skill orchestration in this phase
+- shipping multimodal assets in this phase
+- replacing all user-facing commands immediately
 
 ---
 
-## 4. 核心思路
+## 3. Problem Statement
 
-核心思路一句话：
+Today, the project mixes together three different concerns:
 
-> 不再把项目理解成“同事生成器”，而是“通用 skill 生成引擎 + 类型 preset”。
+1. the subject being distilled
+2. the creation workflow
+3. the output package format
 
-也就是把系统拆成三层：
+In v1, all three are implicitly "colleague".
+
+That coupling creates four concrete problems:
+
+### 3.1 Subject type is hardcoded
+
+The system assumes the target is a coworker. This leaks into:
+
+- default identity strings
+- generated skill names
+- directory layout
+- docs and commands
+
+### 3.2 Entry commands imply separate implementations
+
+Without abstraction, adding `/create-ex` and `/create-icon` would likely produce:
+
+- duplicated intake prompts
+- duplicated writer logic
+- type-specific conditionals scattered across tools
+
+### 3.3 Metadata is too narrow
+
+Current `meta.json` is enough for one generated skill directory, but not enough for:
+
+- gallery category filtering
+- installable package manifests
+- type-specific rendering
+- future multi-skill orchestration
+
+### 3.4 Roadmap features have no shared contract
+
+Future roadmap items such as:
+
+- gallery categories
+- one-click install
+- active evolution
+- relationship graph
+
+all need a canonical skill identity model. That model does not exist yet.
+
+---
+
+## 4. Core Design
+
+The key change is:
+
+> move from a "colleague generator" to a "generic skill generator with type presets".
+
+This introduces three layers:
 
 1. `skill schema`
 2. `type preset`
@@ -138,9 +105,9 @@ roadmap 里后面这些目标：
 
 ### 4.1 Skill Schema
 
-每个生成出来的 skill，都应该符合一套统一的元数据结构，而不是只服务于同事场景。
+Every generated skill should conform to one generic metadata model.
 
-建议的 schema 方向如下：
+Proposed schema:
 
 ```json
 {
@@ -149,10 +116,10 @@ roadmap 里后面这些目标：
   "slug": "zhangsan",
   "type": "colleague",
   "subtype": null,
-  "display_name": "张三",
-  "summary": "字节 L2-1 后端工程师，直接、数据驱动",
+  "display_name": "Eulalie",
+  "summary": "ByteDance L2-1 backend engineer, direct and data-driven",
   "profile": {
-    "name": "张三",
+    "name": "Eulalie",
     "company": "ByteDance",
     "level": "L2-1",
     "role": "Backend Engineer",
@@ -168,7 +135,7 @@ roadmap 里后面这些目标：
   },
   "classification": {
     "gallery_category": "Colleague",
-    "tags": ["backend", "direct", "data-driven"],
+    "tags": ["backend", "data-driven", "direct"],
     "language": "zh-CN"
   },
   "artifacts": {
@@ -197,29 +164,11 @@ roadmap 里后面这些目标：
 }
 ```
 
-这个结构的重点不是字段多少，而是要把以下概念分开：
-
-- skill 是什么
-- 这个 skill 属于什么类型
-- 它有哪些产物
-- 它怎么生成的
-- 它如何兼容旧系统
-
 ### 4.2 Type Preset
 
-类型 preset 的作用是：
+A type preset defines how a skill type behaves without changing the core engine.
 
-在不改生成引擎的前提下，告诉系统“这一类对象应该怎么被创建、怎么被描述、怎么被展示”。
-
-可以理解成：
-
-- `colleague` 是一个 preset
-- `self` 是一个 preset
-- `icon` 是一个 preset
-- `relationship` 是一个 preset
-- `character` 是一个 preset
-
-建议 preset 里至少包含这些信息：
+Proposed preset fields:
 
 ```json
 {
@@ -227,7 +176,7 @@ roadmap 里后面这些目标：
   "display_name": "Colleague",
   "source_domain": "work",
   "relationship_to_user": "coworker",
-  "identity_label": "同事",
+  "identity_label": "colleague",
   "gallery_category": "Colleague",
   "command_aliases": ["/create-colleague", "/create-skill"],
   "prompt_bundle": {
@@ -246,59 +195,60 @@ roadmap 里后面这些目标：
 }
 ```
 
-重点是：
+Future presets:
 
-后续新增类型时，优先是“新增 preset”，而不是“复制一整套实现”。
+- `relationship`
+- `icon`
+- `self`
+- `character`
+- `meta-skill`
+
+The critical point is that these are data/config decisions, not new pipelines.
 
 ### 4.3 Generator Pipeline
 
-未来生成流程应该是：
+The pipeline should become:
 
-1. 用户命令解析到某个 preset
-2. 输入信息被写入统一 schema
-3. 按 preset 选择 prompt bundle / overlay
-4. 通用 generator 产出 `work.md` / `persona.md` / `SKILL.md`
-5. writer 根据 metadata + preset 渲染最终产物
+1. resolve command to preset
+2. collect input into generic schema
+3. run analyzers/builders using preset bundle
+4. write normalized artifacts
+5. emit compatible output for old and new consumers
 
-也就是：
+In short:
 
-`command -> preset -> schema -> generator -> artifacts`
+`command -> preset -> generic metadata -> generator -> artifacts`
 
-而不是：
+not:
 
-`command -> 专属实现`
+`command -> bespoke implementation`
 
 ---
 
-## 5. 数据模型怎么改
+## 5. Data Model Changes
 
-### 5.1 当前模型的问题
+### 5.1 Current model
 
-现在的 `meta.json` 更像是：
+Current `meta.json` is centered on a single colleague record with a `profile` block plus version fields.
 
-- 一个“同事档案”
-- 加上一点版本信息
+That is sufficient for:
 
-它不是面向系统协作的通用元数据。
-
-因此当前模型适合：
-
-- writer
+- local generation
+- updates
 - rollback
-- update
 
-但不适合：
+It is insufficient for:
 
-- gallery
-- package / install
-- future relationship graph
-- multi-skill composition
+- cross-type gallery browsing
+- installable packaging
+- orchestration
+- compatibility logic across old/new commands
 
-### 5.2 建议拆成三层
+### 5.2 Proposed model split
 
-建议把 metadata 分成三个逻辑层。
+Split metadata into three logical layers:
 
-#### A. 核心身份层
+#### Layer A: Core identity
 
 - `id`
 - `slug`
@@ -307,31 +257,31 @@ roadmap 里后面这些目标：
 - `display_name`
 - `summary`
 
-#### B. 语义信息层
+#### Layer B: Subject semantics
 
 - `profile`
 - `source_context`
 - `classification`
 
-#### C. 运行 / 生命周期层
+#### Layer C: Runtime/package lifecycle
 
 - `artifacts`
 - `generation`
 - `lifecycle`
 - `compat`
 
-这样不同模块就能只读自己需要的部分：
+This lets different consumers read only what they need:
 
-- writer 主要读 `artifacts`、`generation`
-- gallery 主要读 `classification`
-- installer 主要读 `id`、`type`、`artifacts`
-- orchestration 主要读 `type`、`source_context`
+- writer reads `artifacts` and `generation`
+- gallery reads `classification`
+- installer reads `id`, `type`, `artifacts`, `lifecycle`
+- orchestration reads `type`, `source_context`, `classification`
 
 ---
 
-## 6. 文件结构怎么演进
+## 6. File Structure Proposal
 
-### 方案 A：迁移期保留当前目录
+### Option A: Keep current storage root during transition
 
 ```text
 skills/colleague/{slug}/
@@ -344,16 +294,16 @@ skills/colleague/{slug}/
   versions/
 ```
 
-优点：
+Pros:
 
-- 和当前系统完全兼容
-- 迁移风险最低
+- zero disruption for current commands and docs
+- easier migration
 
-缺点：
+Cons:
 
-- 命名仍然偏“同事”
+- naming remains colleague-centric
 
-### 方案 B：切到通用目录
+### Option B: Introduce generic root
 
 ```text
 skills/{type}/{slug}/
@@ -367,44 +317,42 @@ skills/{type}/{slug}/
   versions/
 ```
 
-优点：
+Pros:
 
-- 和 dot-skill 方向一致
-- 对 install / package / 分类更自然
+- aligns with dot-skill direction
+- cleaner for install and packaging
 
-缺点：
+Cons:
 
-- 改动面更大
-- 现有命令、文档、脚本都要适配
+- larger migration blast radius
+- more docs and command updates
 
-### 建议
+### Recommendation
 
-采用两阶段迁移：
+Use a two-stage migration:
 
-1. 把 `skills/colleague/{slug}` 作为 `type=colleague` 的规范输出目录，同时保留 `colleagues/{slug}` 的历史兼容
-2. 代码内部先抽象出 `storage resolver`
-3. 等 manifest / install 设计稳定后，再考虑统一切换到 `skills/{type}/{slug}`
+1. use `skills/colleague/{slug}/` as the canonical write target for `type=colleague`
+2. add internal support for a generic storage resolver
+3. switch to `skills/{type}/{slug}/` only after manifest/install work starts
 
-这样改动最稳，不会一上来把 blast radius 扩太大。
+This reduces churn while still removing hardcoded assumptions from code.
 
 ---
 
-## 7. `skill_writer.py` 应该怎么改
+## 7. Writer Refactor
 
-当前 [`tools/skill_writer.py`](/Users/zhoutianyi/project/colleague-skill-series/colleague-skill/tools/skill_writer.py) 最大的问题不是“代码写得不好”，而是它承担了太多写死的 colleague 语义。
+`tools/skill_writer.py` should move from fixed colleague wording to schema-driven rendering.
 
-### 7.1 现状中的硬编码
+### 7.1 Current issues
 
-- frontmatter 名称默认 `colleague_{slug}`
-- 描述文案默认是“某某的工作能力 / 人物性格”
-- 身份 fallback 默认是“同事”
-- 输出结构默认围绕 `skills/colleague/`
+- skill frontmatter name is always `colleague_{slug}`
+- descriptions are colleague-specific
+- identity fallback is `colleague`
+- output paths are externally decided, not derived from a storage policy
 
-### 7.2 目标接口
+### 7.2 Target writer interface
 
-writer 应该从“写死文案的文件写入器”，变成“基于 schema + preset 的产物渲染器”。
-
-理想调用方式类似：
+Proposed create interface:
 
 ```bash
 python3 skill_writer.py \
@@ -415,133 +363,144 @@ python3 skill_writer.py \
   --base-dir ./skills
 ```
 
-writer 的职责应该变成：
+Writer behavior:
 
-- 读取 metadata
-- 读取 preset 配置
-- 决定命名规则和路径
-- 渲染 frontmatter、identity、description
-- 写出兼容的 artifacts
+- read `type` and `generation.preset` from metadata
+- resolve naming and storage via preset registry
+- render frontmatter from schema, not hardcoded strings
+- optionally emit legacy aliases for compatibility
 
-而不是自己决定“你一定是同事，所以名称前缀一定是 colleague”。
+### 7.3 Rendering rules
 
-### 7.3 兼容要求
+The writer should derive:
 
-对 `type=colleague`，这一轮必须保持：
+- frontmatter `name`
+- human-readable description
+- display heading
+- identity line
+- artifact filenames
+
+from:
+
+- metadata
+- preset config
+
+not from ad hoc string templates in code.
+
+### 7.4 Compatibility mode
+
+For `type=colleague`, preserve:
 
 - `colleague_{slug}`
-- 当前文件名
-- 当前 rollback 行为
-- 当前组合 skill 的整体结构
+- existing filenames
+- current rollback behavior
 
-也就是说：
-
-内部抽象可以变化，对外产物尽量不破。
+This keeps old generated skills runnable while the internals evolve.
 
 ---
 
-## 8. 命令模型怎么设计
+## 8. Command Model
 
-### 8.1 当前状态
+### 8.1 Current state
 
-当前核心入口是 `/create-colleague`。
+Primary entry is `/create-colleague`.
 
-### 8.2 目标状态
+### 8.2 Proposed state
 
-建议引入：
+Introduce one canonical command plus aliases:
 
-- `/create-skill` 作为通用主入口
-- `/create-colleague` 作为 `colleague` preset 的兼容别名
-- 后续 `/create-ex`、`/create-icon`、`/create-self` 也都是 preset alias
+- `/create-skill` as canonical generic entry
+- `/create-colleague` as alias with preset `colleague`
+- future `/create-ex`, `/create-icon`, `/create-self` as aliases to type presets
 
-### 8.3 这样做的好处
+### 8.3 Why alias-based commands are better
 
-这样可以实现：
+This gives us:
 
-- 一个生成引擎
-- 一套 metadata
-- 一套 writer
-- 多个用户友好入口
+- one engine
+- one schema
+- one migration path
+- multiple user-friendly entry points
 
-而不是：
+without:
 
-- 多套命令
-- 多套 prompt
-- 多套模板
-- 多套文档解释
+- multiple bespoke implementations
+- repeated prompt definitions
+- fragmented docs
 
-### 8.4 例子
+### 8.4 Command resolution examples
 
-| 用户命令 | 解析结果 | 输出 type |
-|----------|----------|-----------|
-| `/create-skill` | 用户选择或系统推断 preset | 取决于 preset |
-| `/create-colleague` | `colleague` preset | `colleague` |
-| `/create-ex` | `relationship` preset | `relationship` |
-| `/create-icon` | `icon` preset | `icon` |
+| User command | Resolved preset | Output `type` |
+|--------------|-----------------|---------------|
+| `/create-skill` | chosen interactively or inferred | varies |
+| `/create-colleague` | `colleague` | `colleague` |
+| `/create-ex` | `relationship` | `relationship` |
+| `/create-icon` | `icon` | `icon` |
 
 ---
 
-## 9. Prompt 应该怎么抽象
+## 9. Prompt Strategy
 
-这里不建议为每个类型复制全套 prompt。
+Prompt abstraction should happen in two levels.
 
-更合理的做法是“两层结构”。
+### 9.1 Shared prompts
 
-### 9.1 共用基础 prompt
-
-这些内容大概率可以共用：
+These can remain common:
 
 - merger
 - correction handler
-- work/persona builder 主体结构
+- most of persona/work builders
 
-### 9.2 类型 overlay
+### 9.2 Preset overlays
 
-不同类型真正不同的地方主要在：
+Different types likely need small differences in:
 
-- intake 提问方式
-- 身份 framing
-- 标签范围
-- work 部分是不是必需
-- persona 提取重点
+- intake questions
+- identity framing
+- allowed labels
+- work section optionality
+- persona extraction emphasis
 
-因此应该优先设计成：
+So the prompt model should be:
 
-- 一个 base prompt
-- 一层 preset overlay 或变量注入
+- shared base prompt
+- optional preset overlay or variables
 
-而不是：
+not:
 
-- 每个类型一整套完全独立 prompt 文件
+- fully duplicated prompt files per type
 
-### 9.3 示例
+### 9.3 Example
 
-比如：
+A `character` preset may:
 
-- `character` 类型可以弱化真实世界数据校验，更强调“世界观”和“角色能力”
-- `self` 类型可以允许第一人称自述、日记、个人笔记作为高权重来源
-- `icon` 类型可以把公开采访、演讲、文章作为主要输入源
+- downweight real-world source validation
+- allow fictional world context
+- treat "work skill" as capability set instead of job experience
 
-这些都应该是 preset 差异，而不是引擎分叉。
+A `self` preset may:
+
+- prefer first-person self-description inputs
+- allow private journals and notes as primary sources
+
+These are preset-level differences, not engine-level rewrites.
 
 ---
 
-## 10. 为 manifest / package 预留空间
+## 10. Manifest and Packaging Direction
 
-roadmap 第三阶段里有“一键安装”，这件事一定需要一个 package contract。
+Roadmap Phase 3 mentions one-click install. That requires a package contract.
 
-这一轮不需要立刻把 install 做完，但必须先把结构想清楚，不然后面又要返工。
+This phase should not fully implement install yet, but it should reserve the shape.
 
-### 10.1 建议引入 `manifest.json`
-
-比如：
+### 10.1 Proposed `manifest.json`
 
 ```json
 {
   "manifest_version": "1",
   "id": "colleague.zhangsan",
   "type": "colleague",
-  "display_name": "张三",
+  "display_name": "Eulalie",
   "entrypoints": {
     "default": "SKILL.md",
     "work": "work_skill.md",
@@ -561,37 +520,34 @@ roadmap 第三阶段里有“一键安装”，这件事一定需要一个 packa
 }
 ```
 
-### 10.2 为什么现在就要预留
+### 10.2 Why reserve it now
 
-因为后面这些能力都要依赖它：
+Because future features depend on it:
 
 - gallery export
-- download / install
-- compatibility check
-- future multi-skill composition
+- download/install
+- dependency checks
+- multi-skill composition
 
-如果 schema 升级时完全不考虑 manifest，后面大概率又会有第二次迁移。
+If schema work ships without manifest awareness, packaging will later force another migration.
 
 ---
 
-## 11. 和 collector 插件化的关系
+## 11. Collector Pluginization Alignment
 
-这个抽象设计其实也正好给 collector 插件化提供了边界。
+This abstraction also creates a clean seam for collector plugins.
 
-collector 不应该知道“这是同事、前任、偶像还是角色”。
+Collectors should not know about `colleague` vs `ex` vs `icon`.
+They should only output normalized source material.
 
-collector 应该只负责做一件事：
+### 11.1 Collector contract
 
-> 把外部来源转换成标准化的原始材料。
-
-### 11.1 collector 的理想输出
-
-例如：
+Collector output should be normalized into:
 
 ```json
 {
   "source_type": "feishu_messages",
-  "subject_candidates": ["张三"],
+  "subject_candidates": ["Eulalie"],
   "documents": [],
   "messages": [],
   "attachments": [],
@@ -601,216 +557,201 @@ collector 应该只负责做一件事：
 }
 ```
 
-之后再由 generator / preset 去决定：
+Then the generator decides:
 
-- 这份材料对应哪个类型
-- work 和 persona 怎么切
-- 最终写到哪里
+- which preset applies
+- how to interpret the material
+- where it belongs in `work` vs `persona`
 
-### 11.2 这样做的好处
+### 11.2 Benefit
 
-这样可以避免未来出现：
+This avoids building type-specific collectors such as:
 
-- ex 专属 iMessage collector
-- icon 专属文章 collector
-- self 专属日记 collector
+- ex-specific iMessage collector
+- icon-specific web article collector
 
-这种“来源逻辑”和“语义逻辑”耦合的设计。
+at the interface level.
 
-正确做法应该是：
-
-- collector 是 source adapter
-- preset 是 semantic adapter
+Instead, collectors become source adapters, while presets remain semantic adapters.
 
 ---
 
-## 12. 对网站 gallery 的影响
+## 12. Gallery Impact
 
-website 在 roadmap 里已经明确要做 category upgrade。
+The website already wants category upgrades in Phase 2.
 
-如果主仓库先有统一 schema，这件事会很好做：
+This design supports that cleanly:
 
-- gallery 直接读 `type`
-- 分类标签直接读 `classification.gallery_category`
-- filters 直接读 `classification.tags`
-- 特殊徽章可以读 `source_context`
+- gallery reads `type`
+- category label comes from `classification.gallery_category`
+- tag filters come from `classification.tags`
+- badges can depend on `source_context`
 
-否则网站侧最后只能靠字符串规则猜：
-
-- 名字里有没有某种词
-- 描述像不像某类对象
-- YAML 手填一些和主仓库脱节的字段
-
-这会让主仓库和网站的模型越来越分裂。
+Without this abstraction, gallery categorization becomes fragile string heuristics.
 
 ---
 
-## 13. 迁移计划
+## 13. Migration Plan
 
-建议按下面顺序推进。
+### Phase A: Metadata expansion
 
-### Phase A：先扩 `meta.json`
+- add `schema_version`
+- add `type`
+- add `display_name`
+- add `classification`
+- add `generation`
+- add `compat`
 
-先加：
+Keep all current fields that existing tooling expects.
 
-- `schema_version`
-- `type`
-- `display_name`
-- `classification`
-- `generation`
-- `compat`
+### Phase B: Writer refactor
 
-同时保留所有旧字段，避免现有脚本直接挂掉。
+- refactor `skill_writer.py` to read generic metadata
+- keep colleague-compatible output for `type=colleague`
+- add tests for both legacy and generic metadata inputs
 
-### Phase B：重构 `skill_writer.py`
+### Phase C: Command abstraction
 
-- 让 writer 从 metadata + preset 渲染产物
-- 对 `type=colleague` 保持当前输出不变
-- 补 legacy / generic 两种输入的测试
+- introduce `/create-skill`
+- map `/create-colleague` to preset `colleague`
+- keep old command as stable alias
 
-### Phase C：引入命令抽象
+### Phase D: Preset registry
 
-- 增加 `/create-skill`
-- 把 `/create-colleague` 变成 `colleague preset` 的 alias
-- 旧命令继续可用
+- define preset registry file
+- move hardcoded wording into preset config
+- add first non-colleague preset, likely `self` or `icon`
 
-### Phase D：引入 preset registry
+### Phase E: Manifest introduction
 
-- 定义 preset 注册表
-- 把写死文案从代码挪到 preset 配置
-- 先只落地 `colleague`
-- 再加第一个非 colleague preset 验证抽象是否成立
-
-### Phase E：引入 `manifest.json`
-
-- writer 可选输出 `manifest.json`
-- 先不强制所有下游依赖它
-- 后续网站和 install 再逐步接入
+- emit `manifest.json`
+- keep it optional at first
+- wire website/export tooling to consume it later
 
 ---
 
-## 14. 向后兼容要求
+## 14. Backward Compatibility
 
-这一轮是架构升级，不是破坏式重构。
+Backward compatibility is mandatory for this phase.
 
-### 必须保持的东西
+### Must preserve
 
-- 当前 `colleagues/{slug}` 输出结构仍然可作为历史兼容路径
-- 现有 `meta.json` 被依赖的字段继续存在
-- rollback / version 逻辑不破
-- `/create-colleague` 不下线
-- 已经生成好的 colleague skills 继续能跑
+- existing `colleagues/{slug}` output for current users as a legacy fallback
+- existing `meta.json` fields used by tools
+- existing rollback/version behavior
+- existing commands like `/create-colleague`
+- existing generated `SKILL.md` shape for colleague skills
 
-### 可以新增的东西
+### Allowed changes
 
-- 新 metadata 字段
-- preset registry
-- `/create-skill`
-- `manifest.json`
+- adding new metadata fields
+- internally routing through a preset registry
+- adding `manifest.json`
+- introducing `/create-skill` as a new canonical command
 
-### 这一轮不能做的事
+### Not allowed in this phase
 
-- 直接打破旧目录结构
-- 一夜之间把所有文档术语全改掉
-- 强制所有老用户迁移
-
----
-
-## 15. 风险
-
-### 风险 1：过度泛化
-
-如果一开始就想把所有未来类型都设计完整，schema 会很快膨胀得过头。
-
-应对方式：
-
-- 先围绕 3 到 5 种具体类型建模
-- 多用可选字段，少做复杂继承体系
-
-### 风险 2：prompt 维护成本爆炸
-
-如果每个类型都复制一整套 prompt，维护成本会快速失控。
-
-应对方式：
-
-- 共享基础 prompt
-- 只在 preset 层做增量 overlay
-
-### 风险 3：代码和文档脱节
-
-内部已经变成通用引擎，但外部文档还全部只说 colleague，容易让贡献者理解混乱。
-
-应对方式：
-
-- 在 `/create-skill` 真正上线前，外部文档仍然保持 colleague-first
-- 先补内部架构文档，再逐步调整外部文档
-
-### 风险 4：主仓库和网站模型分叉
-
-如果 website 自己定义一套 category schema，主仓库自己定义一套 skill schema，后面同步会很痛苦。
-
-应对方式：
-
-- 先在主仓库定义 canonical schema
-- 网站只消费它的一个映射子集
+- breaking old generated skill folders
+- forcing all docs to rename overnight
+- switching storage roots without compatibility mapping
 
 ---
 
-## 16. 推荐的落地顺序
+## 15. Risks
 
-建议按这个顺序实施：
+### Risk 1: Over-generalization too early
 
-1. 定义 `schema_version=2` 的 metadata 契约
-2. 重构 `skill_writer.py`，让它吃 metadata + preset
-3. 引入 preset registry，先只支持 `colleague`
-4. 增加 `/create-skill`，但保留 `/create-colleague` 兼容别名
-5. 引入 `manifest.json`
-6. 增加第一个非 colleague preset 验证抽象
+If we design for every future case upfront, the schema becomes vague and bloated.
 
-第一个非 colleague preset，我建议优先做：
+Mitigation:
+
+- optimize for 3 to 5 concrete initial types
+- prefer optional fields over deep inheritance
+
+### Risk 2: Prompt complexity explosion
+
+If each type gets a full prompt stack, maintenance cost will spike.
+
+Mitigation:
+
+- use shared prompts plus preset overlays
+
+### Risk 3: Docs drift
+
+Code may move to generic internals while docs still speak only in colleague terms.
+
+Mitigation:
+
+- keep external docs colleague-first until `/create-skill` is ready
+- add an internal architecture doc before mass doc edits
+
+### Risk 4: Website and repo schema divergence
+
+If gallery metadata evolves separately from generated metadata, integration becomes brittle.
+
+Mitigation:
+
+- define one canonical schema source in this repo
+- make website consume a mapped subset of it
+
+---
+
+## 16. Recommendation
+
+The recommended next implementation order is:
+
+1. define `schema_version=2` metadata contract
+2. refactor `skill_writer.py` to render from metadata plus preset
+3. introduce a preset registry with `colleague` first
+4. add `/create-skill` as the canonical command and keep `/create-colleague` as alias
+5. introduce `manifest.json`
+6. add one additional preset to validate the abstraction
+
+The first additional preset should be chosen for contrast.
+
+Recommended order:
 
 1. `self`
 2. `icon`
 3. `relationship`
 4. `character`
 
-为什么 `self` 最适合最先做：
+`self` is the safest validation target because:
 
-- 输入来源最简单
-- 不需要先解决复杂关系伦理问题
-- 不依赖新的外部 collector
-- 足够验证“不是同事也能走同一引擎”
-
----
-
-## 17. 需要尽快拍板的问题
-
-正式开始实现前，建议先决定下面 5 个问题：
-
-1. `type` 应该用用户能理解的类别名，还是更底层的语义域名？
-2. `profile` 是全类型共用一套结构，还是共用核心字段 + 类型扩展字段？
-3. 既然规范目录已经是 `skills/{type}/`，历史 `colleagues/` 兼容什么时候移除？
-4. `manifest.json` 是现在就产出，还是等 install 流程开始时再产出？
-5. 第一个非 colleague preset 选哪个？
+- input acquisition is simple
+- privacy model is clearer than `relationship`
+- it tests non-colleague identity without requiring source collector redesign
 
 ---
 
-## 18. 一句话总结
+## 17. Open Questions
 
-Phase 2 真正该先做的，不是多加几个 `/create-xxx` 命令。
+These should be resolved before implementation starts:
 
-而是先把这件事定义清楚：
+1. Should `type` reflect user-facing category (`icon`) or semantic domain (`public_figure`)?
+2. Do we want one `profile` schema for all types, or a shared core plus type-specific extension blocks?
+3. When can the legacy `colleagues/` fallback be removed now that canonical storage is `skills/{type}/`?
+4. Should `manifest.json` be emitted immediately, or only once install flow begins?
+5. Which non-colleague preset is the first real implementation target?
 
-> 一个通用 skill 到底是什么，它的类型怎么表达，它的元数据怎么组织，它的生成流程怎么复用。
+---
 
-只要这层抽象做好了，后面的：
+## 18. Short Version
 
-- `/create-skill`
-- 分类升级
-- collector 插件化
-- manifest / install
-- multi-skill collaboration
+The project should not add new create commands by cloning the current colleague flow.
 
-都会顺很多。
+It should first:
 
-如果这层不先做，后面每加一个类型，仓库里就会多一套复制粘贴出来的流程，最后反而把 roadmap 自己卡死。
+- define what a generic skill is
+- make type a first-class metadata field
+- move type-specific behavior into presets
+- keep `/create-colleague` as a compatibility alias
+
+That is the smallest change that unlocks:
+
+- Phase 2 category expansion
+- Phase 3 packaging/install
+- future collector plugins
+- future multi-skill orchestration
+
+without turning the codebase into repeated type-specific forks.

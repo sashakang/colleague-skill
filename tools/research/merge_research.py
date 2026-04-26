@@ -116,7 +116,7 @@ def count_potential_long_quote_lines(text: str) -> int:
         if TIMESTAMP_PATTERN.search(stripped):
             count += 1
             continue
-        if any(mark in stripped for mark in ('"', "“", "”", "'")):
+        if any(mark in stripped for mark in ('"', "'")):
             words = re.findall(r"\S+", stripped)
             if len(words) > 25:
                 count += 1
@@ -162,7 +162,7 @@ def summarize_research_files(files: list[Path]) -> str:
         source_count += len(URL_PATTERN.findall(text))
         for url in URL_PATTERN.findall(text):
             urls.add(url)
-        primary_count += len(re.findall(r"\b(first-person|primary source|一手|原始)\b", text, re.IGNORECASE))
+        primary_count += len(re.findall(r"\b(first-person|primary source|original source)\b", text, re.IGNORECASE))
         long_quote_lines += count_potential_long_quote_lines(text)
         section_metrics = collect_structured_section_metrics(text)
         source_metadata_blocks += section_metrics["source_metadata_blocks"]
@@ -181,7 +181,7 @@ def summarize_research_files(files: list[Path]) -> str:
         findings = extract_key_findings(text)
         total_findings += len(findings)
         key_findings.extend(findings[:2])
-        primary_marker = bool(re.search(r'(first-person|primary source|一手|原始)', text, re.IGNORECASE))
+        primary_marker = bool(re.search(r"(first-person|primary source|original source)", text, re.IGNORECASE))
         file_rows.append(
             f"| {file_path.name} | {len(URL_PATTERN.findall(text))} | "
             f"{'yes' if primary_marker else 'no'} |"

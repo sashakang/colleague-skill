@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 """
-飞书浏览器抓取器（Playwright 方案）
+Feishu browser collector (Playwright approach)
 
-复用本机 Chrome 登录态，无需任何 token，能访问你有权限的所有飞书内容。
+Reuses the local Chrome login state, requires no token, and can access all authorized Feishu content.
 
-支持：
-  - 飞书文档（docx/docs）
-  - 飞书知识库（wiki）
-  - 飞书表格（sheets）→ 导出为 CSV
-  - 飞书消息记录（指定群聊）
+Supports:
+  - Feishu documents (docx/docs)
+  - Feishu wiki (wiki)
+  - Feishu sheets (sheets), exported as CSV
+  - Feishu messages from a specified group chat
 
-安装：
+Install:
   pip install playwright
   playwright install chromium
 
-用法：
+Usage:
   python3 feishu_browser.py --url "https://xxx.feishu.cn/wiki/xxx" --output out.txt
   python3 feishu_browser.py --url "https://xxx.feishu.cn/docx/xxx" --output out.txt
-  python3 feishu_browser.py --chat "后端组" --target "张三" --limit 500 --output out.txt
+  python3 feishu_browser.py --chat "Backend Team" --target "Zhang San" --limit 500 --output out.txt
   python3 feishu_browser.py --url "https://xxx.feishu.cn/sheets/xxx" --output out.csv
 """
 
@@ -33,7 +33,7 @@ from typing import Optional
 
 
 def get_default_chrome_profile() -> str:
-    """根据操作系统返回 Chrome 默认 Profile 路径"""
+    """Return the default Chrome profile path for the OS"""
     system = platform.system()
     if system == "Darwin":
         return str(Path.home() / "Library/Application Support/Google/Chrome/Default")
@@ -46,7 +46,7 @@ def get_default_chrome_profile() -> str:
 
 
 def make_context(playwright, chrome_profile: Optional[str], headless: bool):
-    """创建复用登录态的浏览器上下文"""
+    """Create a browser context that reuses login state"""
     profile = chrome_profile or get_default_chrome_profile()
     try:
         ctx = playwright.chromium.launch_persistent_context(
@@ -62,14 +62,14 @@ def make_context(playwright, chrome_profile: Optional[str], headless: bool):
         )
         return ctx
     except Exception as e:
-        print(f"⚠️  无法加载 Chrome Profile：{e}", file=sys.stderr)
-        print(f"   尝试的路径：{profile}", file=sys.stderr)
-        print("   请用 --chrome-profile 手动指定路径", file=sys.stderr)
+        print(f"⚠️  could not load Chrome profile: {e}", file=sys.stderr)
+        print(f"   tried path: {profile}", file=sys.stderr)
+        print("   Use --chrome-profile to manually specify the path", file=sys.stderr)
         sys.exit(1)
 
 
 def detect_page_type(url: str) -> str:
-    """根据 URL 判断飞书页面类型"""
+    """Determine the Feishu page type from the URL."""
     if "/wiki/" in url:
         return "wiki"
     elif "/docx/" in url or "/docs/" in url:
@@ -83,10 +83,10 @@ def detect_page_type(url: str) -> str:
 
 
 def fetch_doc(page, url: str) -> str:
-    """抓取飞书文档或 Wiki 的文本内容"""
+    """Collect text content from a Feishu document or wiki page."""
     page.goto(url, wait_until="domcontentloaded", timeout=30000)
 
-    # 等待编辑器加载（飞书文档渲染较慢）
+    # Wait for the editor to load. Feishu documents can render slowly.
     selectors = [
         ".docs-reader-content",
         ".lark-editor-content",
@@ -106,13 +106,13 @@ def fetch_doc(page, url: str) -> str:
             continue
 
     if not loaded:
-        # 等待一段时间后直接提取 body 文本
+        # Wait briefly, then extract body text directly.
         time.sleep(5)
 
-    # 额外等待异步内容渲染
+    # Give asynchronous content extra time to render.
     time.sleep(2)
 
-    # 尝试多个选择器提取正文
+    # Try multiple selectors to extract body text.
     for sel in selectors:
         try:
             el = page.query_selector(sel)
@@ -123,13 +123,13 @@ def fetch_doc(page, url: str) -> str:
         except Exception:
             continue
 
-    # fallback：提取整个 body
+    # Fallback: extract the whole body.
     text = page.inner_text("body")
     return text.strip()
 
 
 def fetch_sheet(page, url: str) -> str:
-    """抓取飞书表格，转为 CSV 格式"""
+    """Collect a Feishu sheet and convert it to CSV format."""
     page.goto(url, wait_until="domcontentloaded", timeout=30000)
 
     try:
@@ -139,11 +139,11 @@ def fetch_sheet(page, url: str) -> str:
 
     time.sleep(3)
 
-    # 通过 JS 提取表格数据
+    # Extract sheet data through JavaScript.
     data = page.evaluate("""
         () => {
             const rows = [];
-            // 尝试从 DOM 提取可见单元格
+            // Try to extract visible cells from the DOM.
             const cells = document.querySelectorAll('[data-row][data-col]');
             if (cells.length === 0) return null;
 
@@ -175,45 +175,45 @@ def fetch_sheet(page, url: str) -> str:
             lines.append(",".join(f'"{cell}"' for cell in row))
         return "\n".join(lines)
 
-    # fallback：直接提取文本
+    # Fallback: extract text directly.
     return page.inner_text("body")
 
 
 def fetch_messages(page, chat_name: str, target_name: str, limit: int = 500) -> str:
     """
-    抓取指定群聊中目标人物的消息记录。
-    需要先导航到飞书 Web 版消息页面。
+    Collect messages from the target person in the specified group chat.
+    This requires navigating to the Feishu Web messages page first.
     """
-    # 打开飞书消息页
+    # Open the Feishu messages page.
     page.goto("https://applink.feishu.cn/client/chat/open", wait_until="domcontentloaded", timeout=20000)
     time.sleep(3)
 
-    # 尝试搜索群聊
+    # Try to search for the group chat.
     try:
-        # 点击搜索
-        search_btn = page.query_selector('[data-test-id="search-btn"], .search-button, [placeholder*="搜索"]')
+        # Click search.
+        search_btn = page.query_selector('[data-test-id="search-btn"], .search-button')
         if search_btn:
             search_btn.click()
             time.sleep(1)
             page.keyboard.type(chat_name)
             time.sleep(2)
 
-            # 选择第一个结果
+            # Select the first result.
             result = page.query_selector('.search-result-item:first-child, .im-search-item:first-child')
             if result:
                 result.click()
                 time.sleep(2)
     except Exception as e:
-        print(f"⚠️  自动搜索群聊失败：{e}", file=sys.stderr)
-        print(f"   请手动导航到「{chat_name}」群聊，然后按回车继续...", file=sys.stderr)
+        print(f"⚠️  automatic group chat search failed: {e}", file=sys.stderr)
+        print(f"   Manually navigate to the {chat_name} group chat, then press Enter to continue...", file=sys.stderr)
         input()
 
-    # 向上滚动加载历史消息
-    print(f"正在加载消息历史...", file=sys.stderr)
+    # Scroll upward to load historical messages.
+    print("Loading message history...", file=sys.stderr)
     messages_container = page.query_selector('.message-list, .im-message-list, [data-testid="message-list"]')
 
     if messages_container:
-        for _ in range(10):  # 滚动 10 次
+        for _ in range(10):  # Scroll 10 times.
             page.evaluate("el => el.scrollTop = 0", messages_container)
             time.sleep(1.5)
     else:
@@ -223,13 +223,13 @@ def fetch_messages(page, chat_name: str, target_name: str, limit: int = 500) -> 
 
     time.sleep(2)
 
-    # 提取消息
+    # Extract messages.
     messages = page.evaluate(f"""
         () => {{
             const target = "{target_name}";
             const results = [];
 
-            // 常见的消息 DOM 结构
+            // Common message DOM structures.
             const msgSelectors = [
                 '.message-item',
                 '.im-message-item',
@@ -269,29 +269,29 @@ def fetch_messages(page, chat_name: str, target_name: str, limit: int = 500) -> 
     """)
 
     if not messages:
-        print("⚠️  未能自动提取消息，尝试提取页面文本", file=sys.stderr)
+        print("⚠️  Could not automatically extract messages; trying to extract page text", file=sys.stderr)
         return page.inner_text("body")
 
-    # 按权重分类输出
+    # Categorize output by weight.
     long_msgs = [m for m in messages if len(m.get("content", "")) > 50]
     short_msgs = [m for m in messages if len(m.get("content", "")) <= 50]
 
     lines = [
-        f"# 飞书消息记录（浏览器抓取）",
-        f"群聊：{chat_name}",
-        f"目标人物：{target_name}",
-        f"共 {len(messages)} 条消息",
+        f"# Feishu messages (browser collection)",
+        f"group chat: {chat_name}",
+        f"target person: {target_name}",
+        f"total {len(messages)} messages",
         "",
         "---",
         "",
-        "## 长消息（观点/决策类）",
+        "## long messages (opinions/decisions)",
         "",
     ]
     for m in long_msgs:
         lines.append(f"[{m.get('time', '')}] {m.get('content', '')}")
         lines.append("")
 
-    lines += ["---", "", "## 日常消息", ""]
+    lines += ["---", "", "## daily messages", ""]
     for m in short_msgs[:200]:
         lines.append(f"[{m.get('time', '')}] {m.get('content', '')}")
 
@@ -299,50 +299,50 @@ def fetch_messages(page, chat_name: str, target_name: str, limit: int = 500) -> 
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="飞书浏览器抓取器（复用 Chrome 登录态）")
-    parser.add_argument("--url", help="飞书文档/Wiki/表格链接")
-    parser.add_argument("--chat", help="群聊名称（抓取消息记录时使用）")
-    parser.add_argument("--target", help="目标人物姓名（只提取此人的消息）")
-    parser.add_argument("--limit", type=int, default=500, help="最多抓取消息条数（默认 500）")
-    parser.add_argument("--output", default=None, help="输出文件路径（默认打印到 stdout）")
-    parser.add_argument("--chrome-profile", default=None, help="Chrome Profile 路径（默认自动检测）")
-    parser.add_argument("--headless", action="store_true", help="无头模式（不显示浏览器窗口）")
-    parser.add_argument("--show-browser", action="store_true", help="显示浏览器窗口（调试用）")
+    parser = argparse.ArgumentParser(description="Feishu browser collector that reuses Chrome login state")
+    parser.add_argument("--url", help="Feishu document/Wiki/sheet link")
+    parser.add_argument("--chat", help="group chat name for message collection")
+    parser.add_argument("--target", help="target person name; only this person's messages are extracted")
+    parser.add_argument("--limit", type=int, default=500, help="maximum message items to collect (default 500)")
+    parser.add_argument("--output", default=None, help="output file path; defaults to stdout")
+    parser.add_argument("--chrome-profile", default=None, help="Chrome profile path; defaults to auto-detection")
+    parser.add_argument("--headless", action="store_true", help="headless mode; do not show the browser window")
+    parser.add_argument("--show-browser", action="store_true", help="show the browser window for debugging")
 
     args = parser.parse_args()
 
     if not args.url and not args.chat:
-        parser.error("请提供 --url（文档链接）或 --chat（群聊名称）")
+        parser.error("provide --url (document link) or --chat (group chat name)")
 
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        print("错误：请先安装 Playwright：pip install playwright && playwright install chromium", file=sys.stderr)
+        print("Error: install Playwright first: pip install playwright && playwright install chromium", file=sys.stderr)
         sys.exit(1)
 
     headless = args.headless and not args.show_browser
 
-    print(f"启动浏览器（{'无头' if headless else '有界面'}模式）...", file=sys.stderr)
+    print(f"Starting browser ({'headless' if headless else 'headed'} mode)...", file=sys.stderr)
 
     with sync_playwright() as p:
         ctx = make_context(p, args.chrome_profile, headless=headless)
         page = ctx.new_page()
 
-        # 检查是否已登录
+        # Check whether the user is already logged in.
         page.goto("https://www.feishu.cn", wait_until="domcontentloaded", timeout=15000)
         time.sleep(2)
         if "login" in page.url.lower() or "signin" in page.url.lower():
-            print("⚠️  检测到未登录状态。", file=sys.stderr)
-            print("   请在打开的浏览器窗口中登录飞书，登录后按回车继续...", file=sys.stderr)
+            print("⚠️  login state was not detected.", file=sys.stderr)
+            print("   Log in to Feishu in the opened browser window, then press Enter...", file=sys.stderr)
             if headless:
-                print("   提示：请用 --show-browser 参数显示浏览器窗口以完成登录", file=sys.stderr)
+                print("   Tip: use --show-browser to display the browser window and complete login", file=sys.stderr)
                 sys.exit(1)
             input()
 
-        # 根据任务类型执行
+        # Run the requested task type.
         if args.url:
             page_type = detect_page_type(args.url)
-            print(f"页面类型：{page_type}，开始抓取...", file=sys.stderr)
+            print(f"page type: {page_type}, start collection...", file=sys.stderr)
 
             if page_type == "sheet":
                 content = fetch_sheet(page, args.url)
@@ -360,12 +360,12 @@ def main() -> None:
         ctx.close()
 
     if not content or len(content.strip()) < 10:
-        print("⚠️  未能提取到有效内容", file=sys.stderr)
+        print("⚠️  could not extract valid content", file=sys.stderr)
         sys.exit(1)
 
     if args.output:
         Path(args.output).write_text(content, encoding="utf-8")
-        print(f"✅ 已保存到 {args.output}（{len(content)} 字符）", file=sys.stderr)
+        print(f"✅ saved to {args.output} ({len(content)} characters)", file=sys.stderr)
     else:
         print(content)
 

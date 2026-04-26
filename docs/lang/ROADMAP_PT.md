@@ -2,147 +2,147 @@
 
 # dot-skill Roadmap
 
-### De colleague.skill a dot-skill -- Destile qualquer pessoa em uma AI Skill
+### From colleague.skill to dot-skill — Distill anyone into an AI Skill
 
 <br>
 
-Tudo comecou com uma ideia simples: **quando um colega sai, o conhecimento dele vai junto. Da pra manter?**
+We started with a simple idea: **when a colleague leaves, their knowledge walks out the door. Can we keep it?**
 
-Em duas semanas, mais de 13.000 pessoas nos deram a resposta.
+In two weeks, 13,000+ people gave us the answer.
 
-Mas a comunidade nos mostrou que isso vai muito alem de colegas --
-voces destilaram professores, ex-namorados, a si mesmos, ate personagens ficticios.
+But the community showed us this goes far beyond colleagues —
+you distilled professors, exes, yourselves, even fictional characters.
 
-**Entao decidimos evoluir o colleague.skill para dot-skill.**
+**So we decided to evolve colleague.skill into dot-skill.**
 
-Qualquer pessoa pode se tornar um `.skill`.
+Anyone can become a `.skill`.
 
 <br>
 
-*Ultima atualizacao: 2026-04-13*
+*Last updated: 2026-04-13*
 
-[**English**](../../ROADMAP.md) · [**中文**](ROADMAP_ZH.md) · [**Español**](ROADMAP_ES.md) · [**Deutsch**](ROADMAP_DE.md) · [**日本語**](ROADMAP_JA.md) · [**Русский**](ROADMAP_RU.md) · [**한국어**](ROADMAP_KO.md)
+[**Chinese mirror**](docs/lang/ROADMAP_ZH.md) · [**Spanish mirror**](docs/lang/ROADMAP_ES.md) · [**German mirror**](docs/lang/ROADMAP_DE.md) · [**Japanese mirror**](docs/lang/ROADMAP_JA.md) · [**Russian mirror**](docs/lang/ROADMAP_RU.md) · [**Portuguese mirror**](docs/lang/ROADMAP_PT.md) · [**Korean mirror**](docs/lang/ROADMAP_KO.md)
 
 </div>
 
 ---
 
-## O que ja foi feito (v1.0)
+## What's Done (v1.0)
 
-| Funcionalidade | Status |
-|----------------|:------:|
-| `/create-colleague` fluxo completo de criacao | Feito |
-| Coleta automatica do Feishu (mensagens + documentos + planilhas) | Feito |
-| Coleta automatica do DingTalk | Feito |
-| Coleta automatica do Slack | Feito |
-| Historico de chat do WeChat (exportacao SQLite) | Feito |
-| Importacao de e-mail / PDF / imagem / Markdown | Feito |
-| Arquitetura de modelo duplo Work Skill + Persona | Feito |
-| Correcoes de conversa & evolucao incremental | Feito |
-| Controle de versao & rollback | Feito |
-| [Gallery da comunidade](https://titanwings.github.io/colleague-skill-site/) com 99+ skills | Feito |
-
----
-
-## Proximos passos
-
-### Fase 1 -- Construcao da comunidade
-
-> 13k estrelas nao devem ser so um numero. Queremos que todos facam parte disso.
-
-**O que voce vai ver:**
-
-- **GitHub Discussions** -- chega de conversar nas Issues, teremos espacos dedicados para discussao
-- **`CONTRIBUTING.md`** -- guia de contribuicao claro, amigavel para iniciantes
-- **Labels `good-first-issue`** -- tarefas iniciais para novos contribuidores
-- **Lancamento oficial v1.0.0** -- primeiro Release versionado, sem mais "so puxar da main"
-- **Quadro publico de roadmap** -- voce esta lendo agora, mas tambem teremos uma versao ao vivo no GitHub Projects
-
-**Voce pode ajudar:** traduzir documentacao, enviar seu .skill, testar no Windows, ajudar a organizar Issues
+| Capability | Status |
+|------------|:------:|
+| `/create-colleague` full creation workflow | Done |
+| Feishu auto-collection (messages + docs + spreadsheets) | Done |
+| DingTalk auto-collection | Done |
+| Slack auto-collection | Done |
+| WeChat chat history (SQLite export) | Done |
+| Email / PDF / image / Markdown import | Done |
+| Work Skill + Persona dual-model architecture | Done |
+| Conversation corrections & incremental evolution | Done |
+| Version control & rollback | Done |
+| [Community Gallery](https://titanwings.github.io/colleague-skill-site/) with 99+ skills | Done |
 
 ---
 
-### Fase 2 -- dot-skill: Alem dos colegas
+## What's Next
 
-> colleague.skill foi o comeco. dot-skill e o futuro.
+### Phase 1 — Community Building
 
-**Mudancas principais:**
+> 13k stars shouldn't just be a number. We want everyone to be part of this.
 
-- **`/create-skill` entrada universal** -- nao mais limitado a "criar um colega", destile qualquer pessoa
-  - `/create-colleague` para colegas de trabalho, mentores, estagiarios
-  - `/create-ex` para ex-namorados, velhos amigos, conexoes perdidas
-  - `/create-icon` para celebridades, figuras historicas
-  - ou... destile voce mesmo
-- **Upgrade de categorias da Gallery** -- Colega / Celebridade / Relacionamento / Personagem / Eu / Meta-Skill, navegue por tipo
-- **Mais fontes de dados**
-  - Suporte ao WeCom (WeChat Work)
-  - Leitura automatica do iMessage
-  - Correcao de compatibilidade com Windows
+**What you'll see:**
 
-**Voce pode ajudar:** enviar solicitacoes de tipos de pessoa, construir novos coletores de fontes de dados, participar das discussoes de design da Gallery
+- **GitHub Discussions** — no more chatting in Issues, we'll have dedicated discussion spaces
+- **`CONTRIBUTING.md`** — clear contribution guide, beginner-friendly
+- **`good-first-issue` labels** — starter tasks for new contributors
+- **v1.0.0 official release** — first versioned Release, no more "just pull from main"
+- **Public roadmap board** — you're reading it now, but we'll also have a live GitHub Projects version
+
+**You can help:** translate docs, submit your .skill, test on Windows, help triage Issues
 
 ---
 
-### Fase 3 -- Ecossistema de Skills
+### Phase 2 — dot-skill: Beyond Colleagues
 
-> Quando uma pessoa se torna uma skill, um grupo de pessoas pode se tornar um time?
+> colleague.skill was the beginning. dot-skill is the future.
 
-**Estamos explorando:**
+**Key changes:**
 
-- **Colaboracao multi-skill** -- `/meeting @zhangsan @lisi @wangwu`, tres personas discutem um topico juntas
-- **Grafo de relacionamentos** -- defina a dinamica entre personas: quem e parceiro de quem, onde esta a tensao
-- **Instalacao com um clique** -- instale skills da comunidade como plugins
-- **Evolucao ativa** -- skills absorvem periodicamente novas fontes de dados, mantendo-se atualizadas
+- **`/create-skill` universal entry** — no longer limited to "create a colleague", distill anyone
+  - `/create-colleague` for coworkers, mentors, interns
+  - `/create-ex` for exes, old friends, lost connections
+  - `/create-icon` for celebrities, historical figures
+  - or... distill yourself
+- **Gallery category upgrade** — Colleague / Celebrity / Relationship / Character / Self / Meta-Skill, browse by type
+- **More data sources**
+  - WeCom (WeChat Work) support
+  - iMessage auto-read
+  - Windows compatibility fix
 
-**Voce pode ajudar:** proponha seus cenarios ideais de composicao de skills, participe das discussoes de mecanismo de distribuicao
-
----
-
-### Fase 4 -- Multimodal: De vida a eles
-
-> Agora, os .skills so conseguem falar. Queremos que enviem fotos, stickers, falem com a propria voz e, eventualmente, facam videos.
-
-**Passo 1: Expressao visual**
-- Envio automatico de stickers e memes no estilo da persona durante a conversa
-- Geracao de "fotos do dia a dia" no estilo dela -- o que essa pessoa postaria hoje?
-- Cada skill tera seu proprio pacote de stickers e recursos de imagem
-
-**Passo 2: Voz**
-- Falar com a voz da pessoa -- clonagem a partir de gravacoes de reunioes, mensagens de voz
-- Enviar respostas de voz diretamente no chat
-
-**Passo 3: Video (exploratorio)**
-- Geracao de "um dia na vida" em formato curto
-- Humano digital / avatar animado
-
-**Voce pode ajudar:** compartilhar ideias de casos de uso multimodal, contribuir com recursos de stickers, testar clonagem de voz
+**You can help:** submit person-type requests, build new data source collectors, join Gallery design discussions
 
 ---
 
-## Participe
+### Phase 3 — Skill Ecosystem
 
-| Como | Onde |
-|------|------|
-| Envie seu .skill | [Gallery PR](https://titanwings.github.io/colleague-skill-site/) |
-| Discuta e proponha | [GitHub Discussions](https://github.com/titanwings/colleague-skill/discussions) (em breve) |
-| Converse em tempo real | [Discord](https://discord.gg/aRjmJBdK) |
-| Reporte bugs | [Issue](https://github.com/titanwings/colleague-skill/issues/new) |
-| Contribua com codigo | Procure labels `good-first-issue` ou simplesmente abra um PR |
+> When one person becomes a skill, can a group of people become a team?
 
-**Precisamos especialmente de:**
-- Usuarios Windows -- nos ajudem a testar e corrigir problemas de compatibilidade
-- Falantes multilingues -- ajudem a traduzir a documentacao
-- Desenvolvedores de fontes de dados -- construam novos coletores (WeCom, Notion, Google Docs...)
-- Designers -- a Gallery e o site precisam do seu olhar
+**We're exploring:**
+
+- **Multi-skill collaboration** — `/meeting @zhangsan @lisi @wangwu`, three personas discuss a topic together
+- **Relationship graph** — define persona dynamics: who partners with whom, where the tension lies
+- **One-click install** — install community skills like plugins
+- **Active evolution** — skills periodically absorb new data sources, staying up to date
+
+**You can help:** propose your ideal skill composition scenarios, join distribution mechanism design discussions
+
+---
+
+### Phase 4 — Multimodal: Bring Them to Life
+
+> Right now, .skills can only talk. We want them to send photos, stickers, speak in their voice, and eventually make videos.
+
+**Step 1: Visual expression**
+- Auto-send persona-style stickers and memes in conversation
+- Generate "life photos" in their style — what would they post today?
+- Each skill gets its own sticker pack and image assets
+
+**Step 2: Voice**
+- Speak in their voice — clone from meeting recordings, voice messages
+- Send voice replies directly in chat
+
+**Step 3: Video (exploratory)**
+- Short-form "a day in their life" generation
+- Digital human / animated avatar
+
+**You can help:** share multimodal use case ideas, contribute sticker assets, test voice cloning
+
+---
+
+## Get Involved
+
+| How | Where |
+|-----|-------|
+| Submit your .skill | [Gallery PR](https://titanwings.github.io/colleague-skill-site/) |
+| Discuss & propose | [GitHub Discussions](https://github.com/titanwings/colleague-skill/discussions) (coming soon) |
+| Chat in real time | [Discord](https://discord.gg/aRjmJBdK) |
+| Report bugs | [Issue](https://github.com/titanwings/colleague-skill/issues/new) |
+| Contribute code | Look for `good-first-issue` labels, or just open a PR |
+
+**We especially need:**
+- Windows users — help us test and fix compatibility issues
+- Multilingual speakers — help translate documentation
+- Data source developers — build new collectors (WeCom, Notion, Google Docs...)
+- Designers — the Gallery and website need your eye
 
 ---
 
 <div align="center">
 
-**Este roadmap pertence a comunidade. As prioridades mudam com base no seu feedback.**
+**This roadmap belongs to the community. Priorities shift based on your feedback.**
 
-Tem ideias? Venha ao [Discord](https://discord.gg/aRjmJBdK) ou inicie uma Discussion.
+Have ideas? Come to [Discord](https://discord.gg/aRjmJBdK) or start a Discussion.
 
-Cada `.skill` e um relacionamento que continua.
+Every `.skill` is a relationship continued.
 
 </div>

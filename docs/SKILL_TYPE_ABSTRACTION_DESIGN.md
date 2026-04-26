@@ -116,10 +116,10 @@ Proposed schema:
   "slug": "zhangsan",
   "type": "colleague",
   "subtype": null,
-  "display_name": "张三",
+  "display_name": "Eulalie",
   "summary": "ByteDance L2-1 backend engineer, direct and data-driven",
   "profile": {
-    "name": "张三",
+    "name": "Eulalie",
     "company": "ByteDance",
     "level": "L2-1",
     "role": "Backend Engineer",
@@ -176,7 +176,7 @@ Proposed preset fields:
   "display_name": "Colleague",
   "source_domain": "work",
   "relationship_to_user": "coworker",
-  "identity_label": "同事",
+  "identity_label": "colleague",
   "gallery_category": "Colleague",
   "command_aliases": ["/create-colleague", "/create-skill"],
   "prompt_bundle": {
@@ -347,7 +347,7 @@ This reduces churn while still removing hardcoded assumptions from code.
 
 - skill frontmatter name is always `colleague_{slug}`
 - descriptions are colleague-specific
-- identity fallback is `同事`
+- identity fallback is `colleague`
 - output paths are externally decided, not derived from a storage policy
 
 ### 7.2 Target writer interface
@@ -500,7 +500,7 @@ This phase should not fully implement install yet, but it should reserve the sha
   "manifest_version": "1",
   "id": "colleague.zhangsan",
   "type": "colleague",
-  "display_name": "张三",
+  "display_name": "Eulalie",
   "entrypoints": {
     "default": "SKILL.md",
     "work": "work_skill.md",
@@ -547,7 +547,7 @@ Collector output should be normalized into:
 ```json
 {
   "source_type": "feishu_messages",
-  "subject_candidates": ["张三"],
+  "subject_candidates": ["Eulalie"],
   "documents": [],
   "messages": [],
   "attachments": [],

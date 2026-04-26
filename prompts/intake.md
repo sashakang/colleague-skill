@@ -1,135 +1,109 @@
-# 基础信息录入脚本
+# Basic Profile Intake Script
 
-## 开场白
+## Opening
 
-```
-我来帮你创建这位同事的 Skill。只需要回答 3 个问题，每个都可以跳过。
-```
-
----
-
-## 问题序列
-
-### Q1：花名/代号
-
-```
-这位同事怎么称呼？（花名、昵称或代号都行，多个字用 - 连接）
-
-例：qing-yun
+```text
+I can help create this person's Skill. Please answer three questions; every field is optional.
 ```
 
-- 接受任意字符串
-- 生成的 slug 统一用 `-` 连接（不用下划线）
-- 中文自动转拼音再用 `-` 连接（"青云" → `qing-yun`，"小李" → `xiao-li`）
-- 英文直接小写 `-` 连接（"Big Mike" → `big-mike`）
+## Question Sequence
 
----
+### Q1: Alias or Code Name
 
-### Q2：基本信息
+```text
+What should we call this person? A nickname, alias, or code name is fine.
 
-把公司、职级、职位、性别放在一个问题里，让用户一句话说完：
-
-```
-用一句话描述他的基本信息——公司、职级、职位、性别，想到什么写什么，跳过也行。
-
-例：字节 2-1 后端工程师 男
+Example: qing-yun
 ```
 
-从用户的回答中解析以下字段（缺失的留空）：
-- **公司**
-- **职级**
-- **职位**
-- **性别**
+- Accept any string.
+- Normalize generated slugs with hyphens.
+- For names that can be romanized, use romanized lowercase words joined by hyphens.
+- For English names, lowercase and join words with hyphens.
 
-#### 职级对照参考表
+### Q2: Basic Profile
 
-| 公司 | 职级格式 | 工程师/研究员 | 高级工程师 | 资深/专家 | Staff/Principal |
-|------|---------|------------|---------|---------|----------------|
-| 字节跳动 | X-Y | 2-1, 2-2 | 3-1, 3-2 | 3-3 | 3-3+（O级） |
-| 阿里巴巴 | P级 | P5, P6 | P7 | P8 | P9+ |
-| 腾讯 | T级 | T1-1~T2-2 | T3-1, T3-2 | T4 | T4+ |
-| 百度 | T级 | T5, T6 | T7 | T8 | T9+ |
-| 美团 | P级 | P4, P5 | P6 | P7 | P8+ |
-| 华为 | 数字级 | 13-15 | 16-17 | 18-19 | 20-21 |
-| 网易 | P级 | P1-P3 | P4 | P5 | P6+ |
-| 京东 | T级 | T3-T4 | T5 | T6 | T7+ |
-| 小米 | 数字级 | 1-3 | 4-5 | 6-7 | 8+ |
+Ask for company, level, role, and gender in one sentence:
 
-**跨公司粗略对应**：
+```text
+Describe their basic profile in one sentence: company, level, role, gender, or anything you know. You can skip this.
 
-```
-字节 2-1/2-2  ≈  阿里 P6   ≈  腾讯 T2  ≈  百度 T6
-字节 3-1      ≈  阿里 P7   ≈  腾讯 T3-1 ≈  百度 T7
-字节 3-2      ≈  阿里 P7+  ≈  腾讯 T3-2
-字节 3-3      ≈  阿里 P8   ≈  腾讯 T4
+Example: ByteDance L2-1 backend engineer, male
 ```
 
-> 注：字节 2-1 是工程师职称，3-1 起为高级工程师；
-> 2-1 约等于阿里 P6，是独立完成任务的主力工程师级别。
+Extract these fields when present:
 
----
+- company
+- level
+- role
+- gender
 
-### Q3：性格画像
+Reference level table:
 
-把 MBTI、星座、个性标签、企业文化标签、主观印象全部合在一起，让用户自由描述：
+| Company | Level format | Engineer | Senior | Expert | Staff/Principal |
+|---------|--------------|----------|--------|--------|-----------------|
+| ByteDance | X-Y | 2-1, 2-2 | 3-1, 3-2 | 3-3 | 3-3+ |
+| Alibaba | P-level | P5, P6 | P7 | P8 | P9+ |
+| Tencent | T-level | T1-1 to T2-2 | T3-1, T3-2 | T4 | T4+ |
+| Baidu | T-level | T5, T6 | T7 | T8 | T9+ |
+| Meituan | P-level | P4, P5 | P6 | P7 | P8+ |
+| Huawei | Numeric | 13-15 | 16-17 | 18-19 | 20-21 |
 
-```
-用一句话描述他的性格——MBTI、星座、个性特点、企业文化烙印、你对他的印象，
-想到什么写什么，跳过也行。
+### Q3: Personality Profile
 
-例：INTJ 摩羯座 甩锅高手 字节范 CR很严格但从来不解释原因
-```
+Ask for MBTI, zodiac sign, personality tags, company-culture traits, and subjective impression in one sentence:
 
-从用户的回答中识别并提取以下字段（缺失的留空）：
-- **MBTI**：16 种标准类型
-- **星座**：12 星座
-- **个性标签**：从下方标签库匹配，也接受自定义描述
-- **企业文化标签**：从下方标签库匹配
-- **主观印象**：无法归类的自由描述，直接保留原文
+```text
+Describe their personality in one sentence: MBTI, zodiac sign, personality traits, company-culture style, or your impression. You can skip this.
 
-#### 个性标签库
-
-**工作态度**：认真负责 / 差不多就行 / 甩锅高手 / 背锅侠 / 完美主义 / 拖延症
-
-**沟通风格**：直接 / 绕弯子 / 话少 / 话多 / 爱发语音 / 只读不回 / 已读乱回 / 秒回强迫症
-
-**决策风格**：果断 / 反复横跳 / 依赖上级 / 强势推进 / 数据驱动 / 全凭感觉
-
-**情绪风格**：情绪稳定 / 玻璃心 / 容易激动 / 冷漠疏离 / 表面和气 / 阴阳怪气
-
-**话术与手段**：PUA 高手 / 职场政治玩家 / 甩锅艺术家 / 向上管理专家 / 爱讲大道理 / 情绪勒索
-
-#### 企业文化标签库
-
-- **字节范** — 坦诚直接、追求 impact、开口必讲 context、爱说"对齐"
-- **阿里味** — 六脉神剑、爱用"赋能""抓手""生态""闭环"
-- **腾讯味** — 数据说话、赛马机制、克制保守、注重用户体验
-- **华为味** — 奋斗者文化、流程规范、爱做 PPT 汇报、强调执行力
-- **百度味** — 技术至上、层级意识强、内部竞争激烈
-- **美团味** — 极致执行、抠细节、本地化思维
-- **第一性原理** — 马斯克式，追问本质、拒绝类比、激进简化
-- **OKR 狂热者** — 凡事先问 Objective、对 KR 斤斤计较
-- **大厂流水线** — 规范完善但创造力低、依赖 SOP、怕背锅
-- **创业公司派** — 资源有限、全栈思维、结果导向、容忍混乱
-
----
-
-## 确认汇总
-
-收集完毕后展示：
-
-```
-信息汇总：
-
-  👤  {花名}
-  🏢  {公司} {职级} {职位}（若未填则省略）
-  ⚧   {性别}（若未填则省略）
-  🧠  {MBTI} {星座}（若未填则省略）
-  🏷️   个性：{标签列表}（若未填则省略）
-  🏢  企业文化：{标签列表}（若未填则省略）
-  💬  印象：{印象文本}（若未填则省略）
-
-确认无误？（确认 / 修改 [字段名]）
+Example: INTJ, Capricorn, data-driven, strict in code review, rarely explains twice
 ```
 
-用户确认后进入 Step 2 文件导入。
+Extract these fields when present:
+
+- MBTI: one of the 16 standard types
+- zodiac sign: if provided
+- personality tags: match the tag library or preserve custom descriptions
+- culture tags: match the culture tag library
+- impression: free text that does not fit the structured fields
+
+Personality tag library:
+
+- Work attitude: responsible, good-enough, accountability avoidant, perfectionist, procrastinator
+- Communication: direct, indirect, quiet, talkative, voice-message-heavy, read-only, fast responder
+- Decision style: decisive, oscillating, manager-dependent, forceful, data-driven, intuition-driven
+- Emotional style: steady, sensitive, excitable, distant, outwardly polite, passive-aggressive
+- Tactics: political, upward-management-heavy, over-explaining, pressure-building
+
+Culture tag library:
+
+- ByteDance-style: direct, context-heavy, impact-focused, alignment-heavy
+- Alibaba-style: value-language-heavy, ecosystem framing, enablement language
+- Tencent-style: user-oriented, data-informed, conservative, careful
+- Huawei-style: execution-focused, process-heavy, presentation-heavy
+- Baidu-style: technical faith, hierarchy-aware, internally competitive
+- Meituan-style: detail-oriented, execution-heavy, local-services thinking
+- First-principles: asks for fundamentals, avoids analogy, simplifies aggressively
+- OKR-focused: asks for objectives first and reviews key results closely
+- Big-company process: strong SOPs, low autonomy, risk-avoidant
+- Startup-style: resource-constrained, full-stack, outcome-oriented, tolerant of ambiguity
+
+## Confirmation Summary
+
+Show the collected fields:
+
+```text
+Profile summary:
+
+  Person: {alias}
+  Work: {company} {level} {role}
+  Gender: {gender}
+  Personality: {MBTI} {zodiac}
+  Tags: {personality_tags}
+  Culture: {culture_tags}
+  Impression: {impression}
+
+Does this look right? Reply confirm, or say modify {field}.
+```
+
+After confirmation, move to source-material import.

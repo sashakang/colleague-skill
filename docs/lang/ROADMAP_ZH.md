@@ -1,149 +1,148 @@
 <div align="center">
 
-# dot-skill Roadmap 🗺️
+# dot-skill Roadmap
 
-### 从「同事.skill」到「dot-skill」—— 把任何人蒸馏成 AI Skill
-
-<br>
-
-我们从一个简单的想法开始：**离职的同事带走了知识，能不能留下来？**
-
-两周内，13,000+ 人给了我们答案。
-
-但社区告诉我们，这件事远不止同事 ——
-你们蒸馏了罗翔、蒸馏了前任、蒸馏了自己、甚至蒸馏了虚拟角色。
-
-**所以我们决定，把 colleague.skill 进化成 dot-skill。**
-
-任何人，都可以成为一个 `.skill`。
+### From colleague.skill to dot-skill — Distill anyone into an AI Skill
 
 <br>
 
-*最后更新：2026-04-13*
+We started with a simple idea: **when a colleague leaves, their knowledge walks out the door. Can we keep it?**
 
-[**English**](../../ROADMAP.md) · [**Español**](ROADMAP_ES.md) · [**Deutsch**](ROADMAP_DE.md) · [**日本語**](ROADMAP_JA.md) · [**Русский**](ROADMAP_RU.md) · [**Português**](ROADMAP_PT.md) · [**한국어**](ROADMAP_KO.md)
+In two weeks, 13,000+ people gave us the answer.
+
+But the community showed us this goes far beyond colleagues —
+you distilled professors, exes, yourselves, even fictional characters.
+
+**So we decided to evolve colleague.skill into dot-skill.**
+
+Anyone can become a `.skill`.
+
+<br>
+
+*Last updated: 2026-04-13*
+
+[**Chinese mirror**](docs/lang/ROADMAP_ZH.md) · [**Spanish mirror**](docs/lang/ROADMAP_ES.md) · [**German mirror**](docs/lang/ROADMAP_DE.md) · [**Japanese mirror**](docs/lang/ROADMAP_JA.md) · [**Russian mirror**](docs/lang/ROADMAP_RU.md) · [**Portuguese mirror**](docs/lang/ROADMAP_PT.md) · [**Korean mirror**](docs/lang/ROADMAP_KO.md)
 
 </div>
 
 ---
 
-## ✅ 已完成（v1.0）
+## What's Done (v1.0)
 
-这是我们已经做到的：
-
-| 能力 | 状态 |
-|------|:----:|
-| `/create-colleague` 完整创建流程 | ✅ |
-| 飞书全量自动采集（消息 + 文档 + 表格） | ✅ |
-| 钉钉自动采集 | ✅ |
-| Slack 自动采集 | ✅ |
-| 微信聊天记录（SQLite 导出） | ✅ |
-| 邮件 / PDF / 图片 / Markdown 导入 | ✅ |
-| Work Skill + Persona 双模型架构 | ✅ |
-| 对话纠正 & 增量进化 | ✅ |
-| 版本管理 & 回滚 | ✅ |
-| [社区 Gallery](https://titanwings.github.io/colleague-skill-site/) 99+ 技能 | ✅ |
+| Capability | Status |
+|------------|:------:|
+| `/create-colleague` full creation workflow | Done |
+| Feishu auto-collection (messages + docs + spreadsheets) | Done |
+| DingTalk auto-collection | Done |
+| Slack auto-collection | Done |
+| WeChat chat history (SQLite export) | Done |
+| Email / PDF / image / Markdown import | Done |
+| Work Skill + Persona dual-model architecture | Done |
+| Conversation corrections & incremental evolution | Done |
+| Version control & rollback | Done |
+| [Community Gallery](https://titanwings.github.io/colleague-skill-site/) with 99+ skills | Done |
 
 ---
 
-## 🔜 即将到来
+## What's Next
 
-### 🏗️ Phase 1 —— 社区共建
+### Phase 1 — Community Building
 
-> 13k stars 不应该只是数字。我们要让每个人都能参与进来。
+> 13k stars shouldn't just be a number. We want everyone to be part of this.
 
-**你会看到：**
+**What you'll see:**
 
-- **GitHub Discussions 开放** —— 不用再在 Issue 里聊天了，我们会有专门的讨论区
-- **`CONTRIBUTING.md` 上线** —— 清晰的贡献指南，第一次参与开源也能上手
-- **`good-first-issue` 标记** —— 为新贡献者准备的入门任务
-- **v1.0.0 正式发布** —— 第一个有版本号的 Release，告别"从 main 拉代码"的时代
-- **公开路线图看板** —— 你在看的就是，但我们还会有 GitHub Projects 实时版
+- **GitHub Discussions** — no more chatting in Issues, we'll have dedicated discussion spaces
+- **`CONTRIBUTING.md`** — clear contribution guide, beginner-friendly
+- **`good-first-issue` labels** — starter tasks for new contributors
+- **v1.0.0 official release** — first versioned Release, no more "just pull from main"
+- **Public roadmap board** — you're reading it now, but we'll also have a live GitHub Projects version
 
-**你可以做：** 帮忙翻译文档、提交你的 .skill、在 Windows 上测试并反馈、帮忙整理 Issue
-
----
-
-### 🌍 Phase 2 —— dot-skill：不止同事
-
-> colleague.skill 是起点，dot-skill 是未来。
-
-**核心变化：**
-
-- **`/create-skill` 通用入口** —— 不再局限于"创建同事"，任何人都能蒸馏
-  - `/create-colleague` 蒸馏同事、导师、实习生
-  - `/create-ex` 蒸馏前任、老友、失联的人
-  - `/create-icon` 蒸馏名人、历史人物
-  - 或者……蒸馏你自己
-- **Gallery 分类升级** —— 同事 / 名人 / 亲密关系 / 虚拟角色 / 自我 / 元技能，按需浏览
-- **更多数据源**
-  - 企业微信支持
-  - iMessage 自动读取
-  - Windows 兼容性修复
-
-**你可以做：** 提交你想蒸馏的人物类型需求、贡献新的数据源采集器、参与 Gallery 分类设计讨论
+**You can help:** translate docs, submit your .skill, test on Windows, help triage Issues
 
 ---
 
-### 🧩 Phase 3 —— 技能生态
+### Phase 2 — dot-skill: Beyond Colleagues
 
-> 当一个人变成了 skill，一群人能不能变成一个团队？
+> colleague.skill was the beginning. dot-skill is the future.
 
-**我们在探索：**
+**Key changes:**
 
-- **多 skill 协作** —— `/meeting @zhangsan @lisi @wangwu`，三个人开会讨论一个议题
-- **关系图谱** —— 定义 persona 之间的关系：谁和谁是搭档、谁和谁有张力
-- **一键安装** —— 像装插件一样安装社区技能
-- **主动进化** —— skill 定期自动从新数据源吸收知识，保持更新
+- **`/create-skill` universal entry** — no longer limited to "create a colleague", distill anyone
+  - `/create-colleague` for coworkers, mentors, interns
+  - `/create-ex` for exes, old friends, lost connections
+  - `/create-icon` for celebrities, historical figures
+  - or... distill yourself
+- **Gallery category upgrade** — Colleague / Celebrity / Relationship / Character / Self / Meta-Skill, browse by type
+- **More data sources**
+  - WeCom (WeChat Work) support
+  - iMessage auto-read
+  - Windows compatibility fix
 
-**你可以做：** 提出你理想中的技能组合场景、参与分发机制设计讨论
+**You can help:** submit person-type requests, build new data source collectors, join Gallery design discussions
 
 ---
 
-### 🎨 Phase 4 —— 多模态：让 TA 活起来
+### Phase 3 — Skill Ecosystem
 
-> 现在的 .skill 只会说话。我们要让 TA 会发图、会发表情包、会说话、甚至会拍视频。
+> When one person becomes a skill, can a group of people become a team?
 
-**第一步：视觉表达**
-- 对话中自动发送 TA 风格的表情包和梗图
-- 生成 TA 风格的"生活照" —— 今天 TA 会拍什么发朋友圈？
-- 每个 skill 可以有自己的表情包库和图片资源
+**We're exploring:**
 
-**第二步：语音**
-- 用 TA 的音色说话 —— 基于会议录音、语音消息等素材克隆
-- 对话中直接发送语音回复
+- **Multi-skill collaboration** — `/meeting @zhangsan @lisi @wangwu`, three personas discuss a topic together
+- **Relationship graph** — define persona dynamics: who partners with whom, where the tension lies
+- **One-click install** — install community skills like plugins
+- **Active evolution** — skills periodically absorb new data sources, staying up to date
 
-**第三步：视频（探索中）**
-- 短视频风格的"TA 的一天"
-- 数字人 / 动画头像
+**You can help:** propose your ideal skill composition scenarios, join distribution mechanism design discussions
 
-**你可以做：** 分享你对多模态的使用场景想法、贡献表情包素材、测试语音克隆效果
+---
 
+### Phase 4 — Multimodal: Bring Them to Life
 
-## 💬 参与方式
+> Right now, .skills can only talk. We want them to send photos, stickers, speak in their voice, and eventually make videos.
 
-| 方式 | 链接 |
-|------|------|
-| 提交你的 .skill | [Gallery PR](https://titanwings.github.io/colleague-skill-site/) |
-| 讨论与提议 | [GitHub Discussions](https://github.com/titanwings/colleague-skill/discussions)（即将开放） |
-| 实时交流 | [Discord](https://discord.gg/aRjmJBdK) |
-| 报告 Bug | [Issue](https://github.com/titanwings/colleague-skill/issues/new) |
-| 贡献代码 | 看 `good-first-issue` 标签，或直接提 PR |
+**Step 1: Visual expression**
+- Auto-send persona-style stickers and memes in conversation
+- Generate "life photos" in their style — what would they post today?
+- Each skill gets its own sticker pack and image assets
 
-**我们尤其需要：**
-- 🪟 Windows 用户 —— 帮我们测试和修复兼容性问题
-- 🌐 多语言使用者 —— 帮忙翻译文档
-- 🔧 数据源开发者 —— 写新的采集器（企业微信、Notion、Google Docs……）
-- 🎨 设计师 —— Gallery 和网站需要你的审美
+**Step 2: Voice**
+- Speak in their voice — clone from meeting recordings, voice messages
+- Send voice replies directly in chat
+
+**Step 3: Video (exploratory)**
+- Short-form "a day in their life" generation
+- Digital human / animated avatar
+
+**You can help:** share multimodal use case ideas, contribute sticker assets, test voice cloning
+
+---
+
+## Get Involved
+
+| How | Where |
+|-----|-------|
+| Submit your .skill | [Gallery PR](https://titanwings.github.io/colleague-skill-site/) |
+| Discuss & propose | [GitHub Discussions](https://github.com/titanwings/colleague-skill/discussions) (coming soon) |
+| Chat in real time | [Discord](https://discord.gg/aRjmJBdK) |
+| Report bugs | [Issue](https://github.com/titanwings/colleague-skill/issues/new) |
+| Contribute code | Look for `good-first-issue` labels, or just open a PR |
+
+**We especially need:**
+- Windows users — help us test and fix compatibility issues
+- Multilingual speakers — help translate documentation
+- Data source developers — build new collectors (WeCom, Notion, Google Docs...)
+- Designers — the Gallery and website need your eye
 
 ---
 
 <div align="center">
 
-**这份路线图属于社区。优先级会根据你们的反馈动态调整。**
+**This roadmap belongs to the community. Priorities shift based on your feedback.**
 
-有想法？来 [Discord](https://discord.gg/aRjmJBdK) 聊，或者直接开一个 Discussion。
+Have ideas? Come to [Discord](https://discord.gg/aRjmJBdK) or start a Discussion.
 
-每一个 `.skill`，都是一段关系的延续。
+Every `.skill` is a relationship continued.
 
 </div>
