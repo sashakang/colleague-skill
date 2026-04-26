@@ -59,6 +59,8 @@ Massive thanks to everyone who starred — we'll keep shipping, keep distilling.
 
 > 📢 **2026.04.22 Update** — Join the dot-skill community on Discord to share skills, discuss features, and trade tips.
 
+> 📝 **2026.04.26 Update** — This fork is the **English-translated copy** of the original [`titanwings/colleague-skill`](https://github.com/titanwings/colleague-skill). All Chinese copy across README, ROADMAP, and in-repo docs has been translated into English. Behavior, prompts, and skill logic are unchanged from upstream.
+
 > 🗺️ **2026.04.13** — **dot-skill Roadmap is live!** colleague.skill is evolving into **dot-skill** — distill anyone, not just colleagues. 👉 **[Full Roadmap](ROADMAP.md)** · **[💬 Discord](https://discord.gg/aRjmJBdK)**
 
 > 🌐 **2026.04.07** — Community gallery is live! Any skill / meta-skill can drive traffic directly to your own GitHub repo. No middleman. 👉 **[titanwings.github.io/colleague-skill-site](https://titanwings.github.io/colleague-skill-site/)**

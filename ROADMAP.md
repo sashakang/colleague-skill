@@ -21,6 +21,8 @@ Anyone can become a `.skill`.
 
 *Last updated: 2026-04-13*
 
+> 📝 **English-translated copy** of [`titanwings/colleague-skill`](https://github.com/titanwings/colleague-skill). All Chinese copy translated; roadmap content unchanged from upstream.
+
 [**Chinese mirror**](docs/lang/ROADMAP_ZH.md) · [**Spanish mirror**](docs/lang/ROADMAP_ES.md) · [**German mirror**](docs/lang/ROADMAP_DE.md) · [**Japanese mirror**](docs/lang/ROADMAP_JA.md) · [**Russian mirror**](docs/lang/ROADMAP_RU.md) · [**Portuguese mirror**](docs/lang/ROADMAP_PT.md) · [**Korean mirror**](docs/lang/ROADMAP_KO.md)
 
 </div>
