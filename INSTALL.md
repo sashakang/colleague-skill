@@ -18,13 +18,13 @@ Use `/dot-skill` as the stable entrypoint in slash-command hosts. Compatibility 
 Install into the current project:
 
 ```bash
-git clone https://github.com/titanwings/colleague-skill .claude/skills/dot-skill
+git clone https://github.com/sashakang/colleague-skill .claude/skills/dot-skill
 ```
 
 Install globally:
 
 ```bash
-git clone https://github.com/titanwings/colleague-skill ~/.claude/skills/dot-skill
+git clone https://github.com/sashakang/colleague-skill ~/.claude/skills/dot-skill
 ```
 
 Launch with:
@@ -46,7 +46,7 @@ Windows Claude installations also write `~/.claude/commands/{character}-{slug}.m
 Install this repository:
 
 ```bash
-git clone https://github.com/titanwings/colleague-skill ~/.openclaw/workspace/skills/dot-skill
+git clone https://github.com/sashakang/colleague-skill ~/.openclaw/workspace/skills/dot-skill
 ```
 
 Or from an existing checkout:
@@ -80,7 +80,7 @@ Then start a new Hermes session and run:
 Install this repository:
 
 ```bash
-git clone https://github.com/titanwings/colleague-skill ~/.codex/skills/dot-skill
+git clone https://github.com/sashakang/colleague-skill ~/.codex/skills/dot-skill
 ```
 
 Or from an existing checkout:

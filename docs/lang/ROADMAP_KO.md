@@ -124,9 +124,9 @@ Anyone can become a `.skill`.
 | How | Where |
 |-----|-------|
 | Submit your .skill | [Gallery PR](https://titanwings.github.io/colleague-skill-site/) |
-| Discuss & propose | [GitHub Discussions](https://github.com/titanwings/colleague-skill/discussions) (coming soon) |
+| Discuss & propose | [GitHub Discussions](https://github.com/sashakang/colleague-skill/discussions) (coming soon) |
 | Chat in real time | [Discord](https://discord.gg/aRjmJBdK) |
-| Report bugs | [Issue](https://github.com/titanwings/colleague-skill/issues/new) |
+| Report bugs | [Issue](https://github.com/sashakang/colleague-skill/issues/new) |
 | Contribute code | Look for `good-first-issue` labels, or just open a PR |
 
 **We especially need:**

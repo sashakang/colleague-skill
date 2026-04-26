@@ -13,7 +13,7 @@ Thanks for contributing. dot-skill distills a person, relationship, or public fi
 ## Development Setup
 
 ```bash
-git clone https://github.com/titanwings/colleague-skill
+git clone https://github.com/sashakang/colleague-skill
 cd colleague-skill
 python3 -m venv .venv
 source .venv/bin/activate
